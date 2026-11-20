@@ -1,360 +1,162 @@
-<title>Thời khóa biểu</title>
+<title>Lịch của tôi</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Manrope:wght@600;700;800&display=swap">
 <style>
 /* Design plan
-   Color: neutral slate with a blue bias, one ink-blue accent, hue-coded activity types.
-   Type: Manrope for display, Be Vietnam Pro for UI, tabular numerals for times.
-   Layout: one-screen app shell — header stats, toolbar, sticky-headed timetable board. */
+   Color: slate neutrals with blue accent; activity types use hue-coded fills.
+   Type: Manrope display, Be Vietnam Pro body, tabular numerals for times.
+   Layout: one-screen shell — header, toolbar, sticky-headed timetable grid. */
 :root{
   --bg:#f4f6f8;
   --surface:#ffffff;
-  --surface-2:#eceff3;
   --line:#dfe3e9;
   --slot-line:rgba(120,138,160,.16);
-  --hour-line:rgba(120,138,160,.30);
   --fg:#0f1721;
   --fg-2:#4c5765;
   --fg-3:#7c8797;
   --accent:#2b5fa8;
   --accent-ink:#ffffff;
-  --accent-soft:#e8eefa;
-  --ok:#157a4d;
-  --warn:#946209;
-  --bad:#b3352c;
-  --scrim:rgba(14,20,28,.42);
   --shadow:0 1px 2px rgba(15,23,33,.06), 0 10px 28px -14px rgba(15,23,33,.35);
   --font-display:'Manrope','Be Vietnam Pro',system-ui,sans-serif;
   --font-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --slot-h:26px;
-  --gutter-w:58px;
+  --slot-h:30px;
   --gutter:max(16px, env(safe-area-inset-left, 0px));
   --gutter-r:max(16px, env(safe-area-inset-right, 0px));
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0e1319; --surface:#161d25; --surface-2:#1d2631; --line:#293442;
-    --slot-line:rgba(140,165,195,.11); --hour-line:rgba(140,165,195,.22);
+    --bg:#0e1319; --surface:#161d25; --line:#293442; --slot-line:rgba(140,165,195,.11);
     --fg:#e9eef4; --fg-2:#a8b4c2; --fg-3:#7b8797;
-    --accent:#7cabef; --accent-ink:#0b1016; --accent-soft:#17263a;
-    --ok:#5cc48c; --warn:#e0a94a; --bad:#f08b82;
-    --scrim:rgba(3,6,10,.6);
+    --accent:#7cabef; --accent-ink:#0b1016;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 30px -14px rgba(0,0,0,.8);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0e1319; --surface:#161d25; --surface-2:#1d2631; --line:#293442;
-  --slot-line:rgba(140,165,195,.11); --hour-line:rgba(140,165,195,.22);
+  --bg:#0e1319; --surface:#161d25; --line:#293442; --slot-line:rgba(140,165,195,.11);
   --fg:#e9eef4; --fg-2:#a8b4c2; --fg-3:#7b8797;
-  --accent:#7cabef; --accent-ink:#0b1016; --accent-soft:#17263a;
-  --ok:#5cc48c; --warn:#e0a94a; --bad:#f08b82;
-  --scrim:rgba(3,6,10,.6);
+  --accent:#7cabef; --accent-ink:#0b1016;
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 30px -14px rgba(0,0,0,.8);
   color-scheme: dark;
 }
-
 *{box-sizing:border-box}
 html,body{height:100%}
-body{
-  background:var(--bg); color:var(--fg);
-  font-family:var(--font-body); font-size:14px; line-height:1.45;
-  -webkit-font-smoothing:antialiased;
-}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:14px;line-height:1.5;margin:0;-webkit-font-smoothing:antialiased}
 [hidden]{display:none!important}
-button{font:inherit;color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 input,select{font:inherit;color:inherit}
 .app{height:100%;display:flex;flex-direction:column;min-height:0}
-
-/* ---------- top bar ---------- */
-.topbar{
-  display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-  padding:14px var(--gutter-r) 12px var(--gutter);
-  background:var(--surface);border-bottom:1px solid var(--line);
-}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.mark{
-  width:38px;height:38px;border-radius:11px;flex:none;display:grid;place-items:center;
-  background:var(--accent);color:var(--accent-ink);
-  font-family:var(--font-display);font-weight:800;font-size:12.5px;letter-spacing:.03em;
-}
-.brand h1{margin:0;font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.02em;line-height:1.1;text-wrap:balance}
-.brand p{margin:2px 0 0;font-size:12px;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stats{display:flex;gap:22px;margin-left:auto;padding-right:4px;flex-wrap:wrap}
+.topbar{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px var(--gutter-r) 12px var(--gutter);background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{width:34px;height:34px;border-radius:10px;flex:none;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);font-family:var(--font-display);font-weight:800;font-size:11px;letter-spacing:.02em}
+.brand h1{margin:0;font-family:var(--font-display);font-weight:800;font-size:17px;letter-spacing:-.01em;line-height:1.1}
+.brand p{margin:1px 0 0;font-size:11px;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stats{display:flex;gap:18px;margin-left:auto;padding-right:4px;flex-wrap:wrap}
 .stats div{display:flex;align-items:baseline;gap:5px;white-space:nowrap}
-.stats b{font-family:var(--font-display);font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}
-.stats span{font-size:11.5px;color:var(--fg-3)}
+.stats b{font-family:var(--font-display);font-weight:700;font-size:15px;font-variant-numeric:tabular-nums}
+.stats span{font-size:11px;color:var(--fg-3)}
 .top-actions{display:flex;gap:8px;align-items:center}
-
-/* ---------- buttons ---------- */
-.btn{
-  display:inline-flex;align-items:center;gap:7px;justify-content:center;
-  border:1px solid var(--line);background:var(--surface);color:var(--fg);
-  padding:8px 13px;border-radius:9px;font-size:13px;font-weight:600;
-  cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,transform .1s;
-}
-.btn:hover{background:var(--surface-2)}
-.btn:active{transform:translateY(1px)}
+.btn{display:inline-flex;align-items:center;gap:7px;justify-content:center;border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:8px 12px;border-radius:9px;font-size:12.5px;font-weight:600;white-space:nowrap;transition:background .15s}
+.btn:hover{background:var(--surface-2,var(--line))}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.btn.primary:hover{background:var(--accent);filter:brightness(1.06)}
-.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 35%,var(--line))}
-.btn.danger:hover{background:color-mix(in srgb,var(--bad) 9%,var(--surface))}
-.btn.sm{padding:6px 10px;font-size:12.5px;border-radius:8px}
-.btn.icon{padding:0;width:32px;height:32px;font-size:16px;line-height:1;border-radius:8px}
-
-/* ---------- toolbar ---------- */
-.toolbar{
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  padding:10px var(--gutter-r) 10px var(--gutter);
-  border-bottom:1px solid var(--line);
-}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.sm{padding:6px 10px;font-size:12px;border-radius:8px}
+.btn.danger{color:var(--bad,#b3352c);border-color:color-mix(in srgb,var(--bad,#b3352c) 35%,var(--line))}
+.btn.danger:hover{background:color-mix(in srgb,var(--bad,#b3352c) 8%,var(--surface))}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px var(--gutter-r) 10px var(--gutter);border-bottom:1px solid var(--line)}
 .weeknav{display:flex;align-items:center;gap:6px}
-.weeknav .label{font-weight:600;font-size:13px;min-width:188px;text-align:center;font-variant-numeric:tabular-nums}
-.weeknav .label small{display:block;font-weight:500;font-size:11px;color:var(--fg-3)}
-.seg{display:inline-flex;background:var(--surface-2);border-radius:9px;padding:2px;gap:2px}
-.seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--fg-2);cursor:pointer}
+.weeknav .label{font-weight:600;font-size:12.5px;min-width:170px;text-align:center;font-variant-numeric:tabular-nums}
+.weeknav .label small{display:block;font-weight:500;font-size:10px;color:var(--fg-3)}
+.seg{display:inline-flex;background:var(--surface-2,#eceff3);border-radius:9px;padding:2px;gap:2px}
+.seg button{border:0;background:transparent;padding:6px 11px;border-radius:7px;font-size:12px;font-weight:600;color:var(--fg-2)}
 .seg button.on{background:var(--surface);color:var(--fg);box-shadow:0 1px 2px rgba(15,23,33,.12)}
-.search{
-  display:flex;align-items:center;gap:7px;min-width:0;flex:1 1 190px;max-width:300px;
-  border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:0 10px;height:34px;
-}
+.daypick{display:flex;gap:4px;flex-wrap:wrap}
+.daypick button{border:1px solid var(--line);background:var(--surface);border-radius:7px;padding:4px 8px;font-size:11px;font-weight:600;color:var(--fg-2);font-variant-numeric:tabular-nums}
+.daypick button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.search{display:flex;align-items:center;gap:7px;min-width:0;flex:1 1 180px;max-width:260px;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:0 10px;height:34px}
 .search svg{flex:none;color:var(--fg-3)}
 .search input{border:0;background:transparent;outline:none;width:100%;font-size:13px;min-width:0}
 .spacer{flex:1}
-.chip{
-  display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;
-  font-size:12px;font-weight:600;border:1px solid transparent;cursor:pointer;white-space:nowrap;
-}
-.chip.bad{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad);border-color:color-mix(in srgb,var(--bad) 28%,transparent)}
-.chip.ok{background:color-mix(in srgb,var(--ok) 10%,transparent);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 24%,transparent)}
-.daypick{display:flex;gap:4px;flex-wrap:wrap}
-.daypick button{
-  border:1px solid var(--line);background:var(--surface);border-radius:7px;
-  padding:4px 9px;font-size:12px;font-weight:600;color:var(--fg-2);cursor:pointer;font-variant-numeric:tabular-nums;
-}
-.daypick button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-
-/* ---------- board ---------- */
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600;border:1px solid transparent;cursor:pointer;white-space:nowrap}
+.chip.bad{background:color-mix(in srgb,#b3352c 12%,transparent);color:#b3352c;border-color:color-mix(in srgb,#b3352c 28%,transparent)}
 .workspace{flex:1;min-height:0;display:flex;flex-direction:column}
 .boardwrap{flex:1;min-height:0;overflow:auto;padding:0 var(--gutter-r) 32px var(--gutter);overscroll-behavior:contain}
-.emptybar{margin:12px 0 0;padding:10px 14px;border-radius:10px;background:var(--accent-soft);color:var(--fg-2);font-size:12.5px}
-.board{display:grid;grid-template-columns:var(--gutter-w) repeat(var(--d,7), minmax(0,1fr));align-items:start;padding-bottom:8px}
-
-.corner{
-  grid-column:1;grid-row:1;position:sticky;top:0;left:0;z-index:9;background:var(--bg);
-  display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;
-  font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-3);
-  border-bottom:1px solid var(--line);
-}
-.dayhead{
-  position:sticky;top:0;z-index:6;background:var(--bg);
-  border-bottom:1px solid var(--line);padding:9px 10px 9px;display:flex;flex-direction:column;gap:1px;
-}
-.dayhead .wd{font-size:10.5px;font-weight:600;letter-spacing:.05em;color:var(--fg-2);text-transform:uppercase}
-.dayhead .dt{font-size:12.5px;font-weight:600;color:var(--fg-3);font-variant-numeric:tabular-nums}
+.emptybar{margin:12px 0 0;padding:10px 14px;border-radius:10px;background:#e8eefa;color:var(--fg-2);font-size:12.5px}
+.board{display:grid;grid-template-columns:56px repeat(var(--d,7),minmax(0,1fr));align-items:start;padding-bottom:8px}
+.corner{grid-column:1;grid-row:1;position:sticky;top:0;left:0;z-index:9;background:var(--bg);display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--fg-3);border-bottom:1px solid var(--line)}
+.dayhead{position:sticky;top:0;z-index:6;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 10px 8px;display:flex;flex-direction:column;gap:1px}
+.dayhead .wd{font-size:10px;font-weight:600;letter-spacing:.05em;color:var(--fg-2);text-transform:uppercase}
+.dayhead .dt{font-size:12px;font-weight:600;color:var(--fg-3);font-variant-numeric:tabular-nums}
 .dayhead.today .dt{color:var(--accent-ink);background:var(--accent);border-radius:6px;padding:0 6px;width:max-content}
-.dayhead.weekend{background:color-mix(in srgb,var(--surface-2) 50%,var(--bg))}
-
-.allday-gutter{
-  grid-column:1;grid-row:2;position:sticky;left:0;z-index:5;background:var(--bg);
-  font-size:9.5px;color:var(--fg-3);text-align:center;padding:7px 2px 0;line-height:1.2;
-  border-bottom:1px solid var(--line);align-self:stretch;
-}
-.allday{
-  grid-row:2;border-bottom:1px solid var(--line);padding:4px 4px 6px;min-height:30px;
-  display:flex;flex-direction:column;gap:3px;cursor:pointer;min-width:0;
-}
-.allday.weekend{background:color-mix(in srgb,var(--surface-2) 50%,var(--bg))}
-.ad-chip{
-  display:flex;align-items:center;gap:5px;border:0;cursor:pointer;text-align:left;
-  font-size:11px;font-weight:600;padding:3px 6px;border-radius:6px;overflow:hidden;white-space:nowrap;
-  text-overflow:ellipsis;min-width:0;
-  background:color-mix(in srgb, hsl(var(--h) 58% 46%) 16%, var(--surface));
-  box-shadow:inset 2px 0 0 hsl(var(--h) 55% 46%);
-  color:var(--fg);
-}
-.ad-chip span{overflow:hidden;text-overflow:ellipsis}
-.ad-add{font-size:11px;color:var(--fg-3);padding:2px 6px;border-radius:6px;border:0;background:transparent;cursor:pointer;text-align:left}
-.ad-add:hover{background:var(--surface-2);color:var(--fg-2)}
-
-.timecol{
-  grid-column:1;grid-row:3;position:sticky;left:0;z-index:4;background:var(--bg);
-  border-right:1px solid var(--line);position:sticky;
-}
-.tlabel{
-  position:absolute;right:6px;font-size:10px;color:var(--fg-3);
-  font-variant-numeric:tabular-nums;transform:translateY(-5px);
-}
-.daycol{grid-row:3;border-left:1px solid var(--line);min-width:0}
-.daycol.weekend{background:color-mix(in srgb,var(--surface-2) 42%,var(--bg))}
+.dayhead.weekend{background:color-mix(in srgb,#eceff3 50%,var(--bg))}
+.timecol{grid-column:1;grid-row:2;position:sticky;left:0;z-index:4;background:var(--bg);border-right:1px solid var(--line)}
+.tlabel{position:absolute;right:6px;font-size:10px;color:var(--fg-3);font-variant-numeric:tabular-nums;transform:translateY(-5px)}
+.daycol{grid-row:2;border-left:1px solid var(--line);min-width:0}
+.daycol.weekend{background:color-mix(in srgb,#eceff3 42%,var(--bg))}
 .dbody{position:relative;cursor:pointer}
-.dbody{
-  background-image:
-    repeating-linear-gradient(to bottom, var(--slot-line) 0 1px, transparent 1px var(--slot-h)),
-    repeating-linear-gradient(to bottom, var(--hour-line) 0 1px, transparent 1px calc(var(--slot-h) * 2));
-}
-.dbody.drag-over{background-color:color-mix(in srgb,var(--accent) 5%,transparent)}
+.dbody{background-image:repeating-linear-gradient(to bottom,var(--slot-line) 0 1px,transparent 1px var(--slot-h))}
 .evs{position:absolute;inset:0;pointer-events:none}
-.ev{
-  position:absolute;pointer-events:auto;touch-action:none;overflow:hidden;
-  display:flex;flex-direction:column;gap:1px;text-align:left;
-  padding:4px 7px 4px 8px;border-radius:7px;border:0;color:var(--fg);cursor:grab;
-  background:color-mix(in srgb, hsl(var(--h) 58% 46%) 15%, var(--surface));
-  box-shadow:inset 3px 0 0 hsl(var(--h) 55% 46%);
-  transition:box-shadow .15s, transform .12s, opacity .15s;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]) .ev,
-  :root:not([data-theme="light"]) .ad-chip{background:color-mix(in srgb, hsl(var(--h) 60% 56%) 21%, var(--surface))}
-}
-:root[data-theme="dark"] .ev,
-:root[data-theme="dark"] .ad-chip{background:color-mix(in srgb, hsl(var(--h) 60% 56%) 21%, var(--surface))}
-.ev:hover{box-shadow:inset 3px 0 0 hsl(var(--h) 55% 46%), var(--shadow);transform:translateY(-1px);z-index:2}
-.ev.selected{outline:2px solid hsl(var(--h) 60% 48%);outline-offset:1px}
-.ev.dragging{opacity:.4;cursor:grabbing;z-index:9}
+.ev{position:absolute;pointer-events:auto;touch-action:none;overflow:hidden;display:flex;flex-direction:column;gap:2px;text-align:left;padding:3px 7px;border-radius:6px;color:var(--fg);cursor:grab;background:color-mix(in srgb,hsl(var(--h,212) 58% 46%) 16%,var(--surface));box-shadow:inset 3px 0 0 hsl(var(--h,212) 55% 45%);font-size:11px}
+.ev:hover{box-shadow:inset 3px 0 0 hsl(var(--h,212) 55% 45%),var(--shadow);transform:translateY(-1px);z-index:2}
+.ev.selected{outline:2px solid hsl(var(--h,212) 60% 48%);outline-offset:1px}
 .ev.dim{opacity:.22}
-.ev-t{font-weight:600;font-size:12px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ev-m{font-size:10px;color:var(--fg-2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ev.tiny{padding:2px 5px 2px 7px;justify-content:center}
-.ev.tiny .ev-t{font-size:10.5px;-webkit-line-clamp:1}
-.ev.tiny .ev-m{display:none}
-.ghost{
-  position:absolute;left:3px;right:3px;border-radius:7px;pointer-events:none;z-index:8;
-  border:2px dashed var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);
-}
-.nowline{position:absolute;left:0;right:0;height:2px;background:var(--bad);z-index:3;pointer-events:none}
-.nowline::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
-body.grabbing{cursor:grabbing}
-
-/* ---------- drawer ---------- */
-.scrim{position:fixed;inset:0;background:var(--scrim);z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+.ev-t{font-weight:600;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ev-m{font-size:9.5px;color:var(--fg-2);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nowline{position:absolute;left:0;right:0;height:2px;background:#b3352c;z-index:3;pointer-events:none}
+.nowline::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:#b3352c}
+.scrim{position:fixed;inset:0;background:rgba(14,20,28,.4);z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
 .scrim.on{opacity:1;pointer-events:auto}
-.drawer{
-  position:fixed;top:0;right:0;bottom:0;width:min(384px,92vw);z-index:60;
-  background:var(--surface);border-left:1px solid var(--line);
-  display:flex;flex-direction:column;padding-right:env(safe-area-inset-right,0px);
-  transform:translateX(105%);transition:transform .24s cubic-bezier(.3,.8,.3,1);box-shadow:var(--shadow);
-}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(360px,90vw);z-index:60;background:var(--surface);border-left:1px solid var(--line);display:flex;flex-direction:column;transform:translateX(105%);transition:transform .24s cubic-bezier(.3,.8,.3,1);box-shadow:var(--shadow);padding-right:env(safe-area-inset-right,0px)}
 .drawer.open{transform:none}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line)}
-.eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--fg-3)}
-.drawer-body{padding:16px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:16px}
-.dw-title{display:flex;gap:11px;align-items:flex-start}
-.huebar{width:5px;border-radius:3px;background:hsl(var(--h) 55% 46%);align-self:stretch;flex:none}
-.dw-title h2{margin:0;font-family:var(--font-display);font-size:17px;font-weight:700;line-height:1.28;letter-spacing:-.01em}
-.dw-sub{margin:3px 0 0;font-size:12px;color:var(--fg-3)}
-.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:13px;margin:0}
-.kv dt{color:var(--fg-3);font-size:12.5px}
-.kv dd{margin:0;font-weight:500;min-width:0;overflow-wrap:anywhere}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--fg-3)}
+.drawer-body{padding:16px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:14px}
+.dw-title{display:flex;gap:10px;align-items:flex-start}
+.huebar{width:5px;border-radius:3px;background:hsl(var(--h,212) 55% 45%);align-self:stretch;flex:none}
+.dw-title h2{margin:0;font-family:var(--font-display);font-size:16px;font-weight:700;line-height:1.25}
+.dw-sub{margin:2px 0 0;font-size:11.5px;color:var(--fg-3)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:13px;margin:0}
+.kv dt{color:var(--fg-3);font-size:12px}
+.kv dd{margin:0;font-weight:500;overflow-wrap:anywhere}
 .dw-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
-.dw-warn{
-  font-size:12.5px;padding:9px 12px;border-radius:9px;font-weight:500;
-  background:color-mix(in srgb,var(--warn) 12%,transparent);color:var(--warn);
-}
-.agenda{display:flex;flex-direction:column;gap:6px}
-.agenda-day{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--fg-3);margin-top:12px}
-.agenda-day:first-child{margin-top:0}
-.agenda-item{
-  display:grid;grid-template-columns:60px 1fr;gap:10px;align-items:baseline;text-align:left;
-  padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:13px;
-}
-.agenda-item:hover{background:var(--surface-2)}
-.agenda-item .t{font-size:11.5px;color:var(--fg-3);font-variant-numeric:tabular-nums}
-.agenda-item b{font-weight:600;display:block;line-height:1.3}
-.agenda-item small{color:var(--fg-3);font-size:11.5px}
-.conflict-item{padding:10px 12px;border-radius:9px;border:1px solid color-mix(in srgb,var(--bad) 30%,var(--line));font-size:12.5px}
-.conflict-item + .conflict-item{margin-top:8px}
-
-/* ---------- modals ---------- */
-.modal{
-  position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:var(--scrim);overflow:auto;
-  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
-}
-.dialog{
-  width:100%;max-width:520px;background:var(--surface);border-radius:16px;border:1px solid var(--line);
-  box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:14px;max-height:92%;overflow:auto;
-}
-.dialog h2{margin:0;font-family:var(--font-display);font-size:18px;font-weight:700;letter-spacing:-.01em}
-.dialog p.lead{margin:-8px 0 0;font-size:12.5px;color:var(--fg-3)}
+.modal{position:fixed;inset:0;z-index:70;display:grid;place-items:center;background:rgba(14,20,28,.4);overflow:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.dialog{width:100%;max-width:500px;background:var(--surface);border-radius:16px;border:1px solid var(--line);box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:12px;max-height:92vh;overflow:auto}
+.dialog h2{margin:0;font-family:var(--font-display);font-size:17px;font-weight:700;letter-spacing:-.01em}
+.dialog p.lead{margin:-6px 0 0;font-size:12px;color:var(--fg-3)}
 .field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--fg-2);min-width:0}
-.field > span{font-weight:600;font-size:11.5px;letter-spacing:.02em}
-.field input,.field select{
-  height:38px;border:1px solid var(--line);border-radius:9px;background:var(--surface);
-  padding:0 10px;font-size:13.5px;outline:none;width:100%;min-width:0;
-}
+.field>span{font-weight:600;font-size:11.5px;letter-spacing:.02em}
+.field input,.field select{height:36px;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:0 10px;font-size:13px;outline:none;width:100%;min-width:0}
 .field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
-.field input:disabled{opacity:.45}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .form-row.three{grid-template-columns:repeat(3,minmax(0,1fr))}
-.swatches{display:flex;gap:7px;flex-wrap:wrap}
-.swatch{width:24px;height:24px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
-.swatch.on{border-color:var(--fg);box-shadow:inset 0 0 0 2px var(--surface)}
-.check{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--fg-2);cursor:pointer;user-select:none}
-.check input{width:16px;height:16px;accent-color:var(--accent);margin:0}
-.hint{font-size:12px;color:var(--fg-3)}
-.hint.warn{color:var(--warn);font-weight:500}
-.dialog-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:4px}
+.hint{font-size:11.5px;color:var(--fg-3)}
+.hint.warn{color:#946209;font-weight:500}
+.dialog-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
 .dialog-actions .left{margin-right:auto}
-.split{height:1px;background:var(--line)}
-
-/* ---------- toast ---------- */
-.toast{
-  position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));
-  transform:translateX(-50%) translateY(8px);background:var(--fg);color:var(--bg);
-  border-radius:999px;padding:9px 12px 9px 16px;display:flex;align-items:center;gap:12px;
-  font-size:12.5px;font-weight:500;z-index:90;opacity:0;pointer-events:none;
-  transition:opacity .18s, transform .18s;box-shadow:var(--shadow);max-width:calc(100vw - 32px);
-}
+.toast{position:fixed;left:50%;bottom:calc(16px+env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(8px);background:var(--fg);color:var(--bg);border-radius:999px;padding:9px 14px;font-size:12.5px;font-weight:500;z-index:90;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;box-shadow:var(--shadow);max-width:calc(100vw-32px)}
 .toast.on{opacity:1;transform:translateX(-50%);pointer-events:auto}
-.toast button{
-  border:0;background:transparent;color:inherit;font-weight:700;font-size:12px;cursor:pointer;
-  padding:4px 8px;border-radius:999px;white-space:nowrap;text-decoration:underline;text-underline-offset:2px;
-}
-
-@media (max-width:760px){
-  .topbar{padding-top:10px;gap:10px}
-  .stats{gap:14px;margin-left:0;order:3;width:100%}
-  .stats b{font-size:14px}
-  .top-actions{margin-left:auto}
-  .search{max-width:none;order:5;flex-basis:100%}
-  .weeknav .label{min-width:0;font-size:12.5px}
-  .board{min-width:min(640px,100vw);--slot-h:24px;--gutter-w:46px}
-  .dayhead{padding:8px 7px}
-  .dayhead .wd{font-size:9.5px}
-  .ev-t{font-size:11.5px}
-  .ev-m{font-size:9.5px}
-}
-@media (max-width:420px){
-  .btn span.lbl{display:none}
-  .btn{padding:8px 10px}
-  .btn.primary{padding:8px 12px}
-  .form-row.three{grid-template-columns:1fr 1fr}
-}
-@media (prefers-reduced-motion:reduce){
-  *{transition:none!important;animation:none!important}
-}
+@media (max-width:760px){.board{min-width:min(640px,100vw);--slot-h:26px}.topbar{padding-top:10px}.stats{gap:14px;margin-left:0;order:3;width:100%}.top-actions{margin-left:auto}.search{max-width:none;order:5;flex-basis:100%}.weeknav .label{min-width:0;font-size:12px}.dayhead{padding:7px 8px}.ev-t{font-size:10.5px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
 <div class="app">
   <header class="topbar">
     <div class="brand">
-      <div class="mark" aria-hidden="true">TKB</div>
+      <div class="mark" aria-hidden="true">L</div>
       <div style="min-width:0">
         <h1 id="appTitle">Lịch của tôi</h1>
-        <p id="semLabel">Tuần 47 · 16/11 – 22/11</p>
+        <p id="semLabel">Tuần · --/--</p>
       </div>
     </div>
     <div class="stats" aria-label="Tổng quan tuần">
       <div><b id="stEvents">0</b><span>hoạt động</span></div>
-      <div><b id="stHours">0</b><span>giờ có lịch</span></div>
-      <div><b id="stFree">0</b><span>giờ rảnh</span></div>
+      <div><b id="stHours">0</b><span>giờ</span></div>
     </div>
     <div class="top-actions">
-      <button class="btn sm" id="btnCopy" title="Sao chép lịch tuần dạng văn bản">Sao chép</button>
       <button class="btn sm" id="btnSettings">Cài đặt</button>
       <button class="btn primary sm" id="btnAdd">+ Thêm</button>
     </div>
@@ -362,28 +164,23 @@ body.grabbing{cursor:grabbing}
 
   <div class="toolbar">
     <div class="weeknav">
-      <button class="btn icon" id="prevWk" aria-label="Tuần trước">‹</button>
+      <button class="btn icon" id="prevWk" style="padding:0;width:32px;height:32px;font-size:16px;line-height:1">‹</button>
       <button class="btn sm" id="btnToday" style="border:0;background:transparent">Hôm nay</button>
       <div class="label" id="weekLabel">Tuần 1<small>01/01 – 07/01</small></div>
-      <button class="btn icon" id="nextWk" aria-label="Tuần sau">›</button>
+      <button class="btn icon" id="nextWk" style="padding:0;width:32px;height:32px;font-size:16px;line-height:1">›</button>
     </div>
-    <div class="seg" role="group" aria-label="Chế độ xem">
+    <div class="seg" role="group" aria-label="Xem">
       <button data-view="week" class="on">Tuần</button><button data-view="day">Ngày</button>
     </div>
     <div class="daypick" id="dayPick" hidden></div>
-    <label class="search">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      <input id="q" type="search" placeholder="Tìm hoạt động, địa điểm" aria-label="Tìm hoạt động">
-    </label>
+    <label class="search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><input id="q" type="search" placeholder="Tìm hoạt động" aria-label="Tìm"></label>
     <button class="chip" id="btnAgenda">Danh sách tuần</button>
     <div class="spacer"></div>
-    <button class="chip ok" id="btnConflicts" hidden></button>
+    <button class="chip bad" id="btnConflicts" hidden></button>
   </div>
 
   <main class="workspace">
-    <div class="boardwrap" id="boardwrap">
-      <div class="board" id="board"></div>
-    </div>
+    <div class="boardwrap" id="boardwrap"><div class="board" id="board"></div></div>
   </main>
 </div>
 
@@ -391,7 +188,7 @@ body.grabbing{cursor:grabbing}
 <aside class="drawer" id="drawer" aria-hidden="true" aria-label="Chi tiết">
   <div class="drawer-head">
     <span class="eyebrow" id="dwEyebrow">Chi tiết</span>
-    <button class="btn icon" id="dwClose" aria-label="Đóng">✕</button>
+    <button class="btn icon" id="dwClose" style="padding:0;width:32px;height:32px;font-size:16px;line-height:1">✕</button>
   </div>
   <div class="drawer-body" id="dwBody"></div>
 </aside>
@@ -399,49 +196,21 @@ body.grabbing{cursor:grabbing}
 <div class="modal" id="editor" hidden>
   <form class="dialog" id="editorForm" novalidate>
     <h2 id="edTitle">Thêm hoạt động</h2>
-    <p class="lead">Hoạt động sẽ xuất hiện trên lưới và được lưu trên trình duyệt này.</p>
-
-    <label class="field">
-      <span>Tên hoạt động</span>
-      <input id="edName" maxlength="70" placeholder="VD: Đi Đà Lạt, Họp nhóm dự án" autocomplete="off" required>
-    </label>
-
-    <div class="field">
-      <span>Loại</span>
-      <select id="edCat"></select>
-    </div>
-
-    <div id="newCatRow" hidden style="display:flex;flex-direction:column;gap:10px">
-      <div class="field">
-        <span>Tên loại mới</span>
-        <input id="edNewCat" placeholder="VD: Sức khỏe, Việc nhà" maxlength="30" autocomplete="off">
-      </div>
-      <div class="field">
-        <span>Màu nhận diện</span>
-        <div class="swatches" id="edSwatches"></div>
-      </div>
-    </div>
-
-    <label class="check"><input type="checkbox" id="edAllday"> Cả ngày</label>
-
+    <p class="lead">Lưu trên trình duyệt của bạn.</p>
+    <label class="field"><span>Tên hoạt động</span><input id="edName" maxlength="60" placeholder="VD: Họp nhóm dự án" required></label>
+    <label class="field"><span>Loại</span><select id="edCat"></select></label>
+    <div class="field"><span>Màu</span><div class="swatches" id="edSwatches"></div></div>
     <div class="form-row">
       <label class="field"><span>Thứ</span><select id="edDay"></select></label>
-      <label class="field"><span>Lặp lại</span><select id="edWeeks"></select></label>
-    </div>
-
-    <div class="form-row">
       <label class="field"><span>Bắt đầu</span><input type="time" id="edStart" step="300"></label>
       <label class="field"><span>Kết thúc</span><input type="time" id="edEnd" step="300"></label>
     </div>
-
     <div class="form-row">
-      <label class="field"><span>Địa điểm</span><input id="edPlace" maxlength="60" placeholder="Văn phòng, quán cà phê…" autocomplete="off"></label>
-      <label class="field"><span>Ghi chú</span><input id="edNote" maxlength="80" placeholder="Không bắt buộc" autocomplete="off"></label>
+      <label class="field"><span>Địa điểm</span><input id="edPlace" maxlength="40" placeholder="Không bắt buộc"></label>
+      <label class="field"><span>Ghi chú</span><input id="edNote" maxlength="60" placeholder="Không bắt buộc"></label>
     </div>
-
-    <div class="hint" id="edHint">Áp dụng từ tuần đang xem</div>
+    <div class="hint" id="edHint">Tuần đang xem</div>
     <div class="hint warn" id="edWarn" hidden></div>
-
     <div class="dialog-actions">
       <button type="button" class="btn danger" id="edDelete" hidden>Xóa</button>
       <span class="left"></span>
@@ -454,26 +223,18 @@ body.grabbing{cursor:grabbing}
 <div class="modal" id="settings" hidden>
   <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="setTitle">
     <h2 id="setTitle">Cài đặt</h2>
-    <p class="lead">Dữ liệu được lưu trên trình duyệt này, không gửi đi đâu khác.</p>
-    <label class="field"><span>Tên lịch</span><input id="setTitleInput" maxlength="50"></label>
+    <p class="lead">Dữ liệu nằm trên trình duyệt này, không gửi đi đâu khác.</p>
+    <label class="field"><span>Tên lịch</span><input id="setTitle" maxlength="40"></label>
     <div class="form-row">
-      <label class="field"><span>Bắt đầu ngày</span><select id="setStartH"></select></label>
-      <label class="field"><span>Kết thúc ngày</span><select id="setEndH"></select></label>
+      <label class="field"><span>Bắt đầu hiển thị</span><select id="setStart"></select></label>
+      <label class="field"><span>Kết thúc hiển thị</span><select id="setEnd"></select></label>
     </div>
-    <div class="field">
-      <span>Hiển thị</span>
-      <select id="setWeekend"><option value="1">Cả thứ Bảy, Chủ Nhật</option><option value="0">Chỉ ngày trong tuần</option></select>
-    </div>
-    <div class="split"></div>
-    <div class="field">
-      <span>Dữ liệu mẫu</span>
-      <div class="hint">Xóa toàn bộ hoạt động và loại, bắt đầu một lịch trống.</div>
-    </div>
+    <div class="field"><span>Hiển thị</span><select id="setWeekend"><option value="1">Thứ Hai–Chủ Nhật</option><option value="0">Thứ Hai–Thứ Sáu</option></select></div>
     <div class="dialog-actions">
-      <button type="button" class="btn danger" id="btnReset">Làm trống lịch</button>
+      <button type="button" class="btn danger" id="btnReset">Xóa toàn bộ dữ liệu</button>
       <span class="left"></span>
       <button type="button" class="btn" id="setCancel">Đóng</button>
-      <button type="button" class="btn primary" id="setSave">Lưu cài đặt</button>
+      <button type="button" class="btn primary" id="setSave">Lưu</button>
     </div>
   </div>
 </div>
@@ -483,987 +244,213 @@ body.grabbing{cursor:grabbing}
 <script>
 (function(){
   "use strict";
+  const KEY='tkb.v3';
+  const DAYS=['Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy','Chủ Nhật'];
+  const HUES=[212,152,28,348,188,266,96,8];
+  const SLOT=30;
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const pad=n=>String(n).padStart(2,'0');
+  const ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+  const parseYMD=s=>{const p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);};
+  const addDays=(d,n)=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());x.setDate(x.getDate()+n);return x;};
+  const mondayOf=d=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());return addDays(x,-((x.getDay()+6)%7));};
+  const dm=d=>pad(d.getDate())+'/'+pad(d.getMonth()+1);
+  const isoWeek=d=>{const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y0)/86400000+1)/7);};
+  const toMin=t=>{const p=String(t).split(':').map(Number);return p[0]*60+(p[1]||0);};
+  const hhmm=m=>{m=Math.max(0,Math.min(1440,Math.round(m)));return pad(Math.floor(m/60))+':'+pad(m%60);};
+  const durText=m=>{const h=Math.floor(m/60),mm=m%60;return h&&mm?h+'g'+mm+'p':h?h+'g':mm+'p'};
 
-  /* ---------------- constants ---------------- */
-  const KEY = 'tkb.state.v2';
-  const DAYNAMES = ['Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy','Chủ Nhật'];
-  const HUES = [212, 152, 28, 348, 188, 266, 96, 8];
-  const SLOT_MIN = 30;
-
-  const $ = function(id){ return document.getElementById(id); };
-  const esc = function(s){
-    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
-      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
-    });
-  };
-
-  /* ---------------- dates & time ---------------- */
-  function pad(n){ return String(n).padStart(2, '0'); }
-  function ymd(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
-  function parseYMD(s){ const p = s.split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); }
-  function addDays(d, n){ const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate()+n); return x; }
-  function mondayOf(d){ const x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); return addDays(x, -((x.getDay()+6)%7)); }
-  function dm(d){ return pad(d.getDate()) + '/' + pad(d.getMonth()+1); }
-  function isoWeek(d){
-    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    const day = t.getUTCDay() || 7;
-    t.setUTCDate(t.getUTCDate() + 4 - day);
-    const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
-    return Math.ceil(((t - y0) / 86400000 + 1) / 7);
-  }
-  function toMin(t){ const p = String(t).split(':').map(Number); return p[0]*60 + (p[1]||0); }
-  function hhmm(m){
-    m = Math.max(0, Math.min(24*60, Math.round(m)));
-    return pad(Math.floor(m/60)) + ':' + pad(m%60);
-  }
-  function fmtRange(a, b){ return a + ' – ' + b; }
-  function durationText(mins){
-    const h = Math.floor(mins/60), m = mins%60;
-    if (h && m) return h + ' giờ ' + m + ' phút';
-    if (h) return h + ' giờ';
-    return m + ' phút';
-  }
-
-  /* ---------------- state ---------------- */
-  function uid(p){ return (p || 'e') + '-' + Math.random().toString(36).slice(2, 8); }
-
+  function uid(p){return (p||'e')+'-'+Math.random().toString(36).slice(2,8);}
   function defaultState(){
-    const ws = ymd(mondayOf(new Date()));
-    const cats = [
-      { id:'ct-work',  name:'Làm việc', hue:212 },
-      { id:'ct-study', name:'Học tập',  hue:266 },
-      { id:'ct-sport', name:'Thể thao', hue:28  },
-      { id:'ct-family',name:'Gia đình', hue:348 },
-      { id:'ct-fun',   name:'Giải trí', hue:152 },
-      { id:'ct-travel',name:'Du lịch',  hue:188 },
-      { id:'ct-health',name:'Sức khỏe', hue:8   }
-    ];
-    function e(catId, day, title, start, end, place, note){
-      return { id: uid('ev'), catId: catId, day: day, title: title, start: start, end: end,
-               place: place || '', note: note || '', allday: false, weekStart: ws, weeks: 16 };
-    }
-    const events = [
-      e('ct-sport', 0, 'Chạy bộ ven hồ', '06:30', '07:15', 'Công viên Thống Nhất'),
-      e('ct-work',  0, 'Làm việc — dự án Aurora', '08:30', '12:00', 'Văn phòng tầng 6'),
-      e('ct-study', 0, 'Học tiếng Anh', '19:30', '21:00', 'Online'),
-      e('ct-work',  1, 'Làm việc — dự án Aurora', '08:30', '17:30', 'Văn phòng tầng 6'),
-      e('ct-sport', 1, 'Gym', '18:30', '19:30', 'California Fitness'),
-      e('ct-work',  2, 'Làm việc buổi sáng', '08:30', '11:30', 'Văn phòng tầng 6'),
-      e('ct-work',  2, 'Họp nhóm thiết kế', '14:00', '16:00', 'Phòng 3.2'),
-      e('ct-work',  3, 'Làm việc — dự án Aurora', '08:30', '17:30', 'Văn phòng tầng 6'),
-      e('ct-family',3, 'Xem phim cùng gia đình', '20:00', '22:00', 'Nhà'),
-      e('ct-work',  4, 'Làm việc — tổng kết tuần', '08:30', '16:00', 'Văn phòng tầng 6'),
-      e('ct-fun',   4, 'Cà phê với bạn', '19:00', '22:00', 'The Coffee House'),
-      { id: uid('ev'), catId:'ct-travel', day:5, title:'Đi Đà Lạt', start:'00:00', end:'23:59',
-        place:'Đà Lạt', note:'', allday:true, weekStart: ws, weeks: 1 },
-      { id: uid('ev'), catId:'ct-travel', day:6, title:'Đi Đà Lạt', start:'00:00', end:'23:59',
-        place:'Đà Lạt', note:'Về trong ngày', allday:true, weekStart: ws, weeks: 1 }
-    ];
-    return {
-      appTitle: 'Lịch của tôi',
-      startHour: 6,
-      endHour: 23,
-      showWeekend: true,
-      weekStart: ws,
-      view: 'week',
-      dayIndex: 0,
-      forceWeek: false,
-      cats: cats,
-      events: events
-    };
+    const ws=ymd(mondayOf(new Date()));
+    const cats=[{id:'ct-work',name:'Làm việc',hue:212},{id:'ct-study',name:'Học tập',hue:266},{id:'ct-sport',name:'Thể thao',hue:28},{id:'ct-family',name:'Gia đình',hue:348},{id:'ct-fun',name:'Giải trí',hue:152},{id:'ct-travel',name:'Du lịch',hue:188}];
+    const ev=(cat,day,title,start,end)=>({id:uid('ev'),catId:cat,day,title,start,end,place:'',note:'',weekStart:ws,weeks:1});
+    return {appTitle:'Lịch của tôi',startHour:6,endHour:22,showWeekend:true,weekStart:ws,view:'week',dayIndex:0,cats,events:[
+      ev('ct-sport',0,'Chạy bộ','06:30','07:15'),
+      ev('ct-work',0,'Làm việc','08:30','12:00'),
+      ev('ct-work',1,'Làm việc','08:30','17:30'),
+      ev('ct-sport',1,'Gym','18:30','19:30'),
+      ev('ct-family',4,'Gia đình','19:00','21:00')
+    ]};
   }
-
   function sanitize(s){
-    if (!s || !Array.isArray(s.cats) || !Array.isArray(s.events)) return defaultState();
-    s.startHour = Math.min(20, Math.max(0, +s.startHour || 6));
-    s.endHour = Math.min(24, Math.max(s.startHour + 4, +s.endHour || 23));
-    s.showWeekend = s.showWeekend !== false;
-    if (typeof s.weekStart !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s.weekStart)) s.weekStart = ymd(mondayOf(new Date()));
-    s.view = s.view === 'day' ? 'day' : 'week';
-    s.dayIndex = Math.min(6, Math.max(0, +s.dayIndex || 0));
-    s.appTitle = typeof s.appTitle === 'string' && s.appTitle.trim() ? s.appTitle : 'Lịch của tôi';
-    s.cats = s.cats.filter(function(c){ return c && typeof c.id === 'string' && typeof c.name === 'string'; });
-    if (!s.cats.length) s.cats = [{ id: uid('ct'), name: 'Chung', hue: 212 }];
-    s.events = s.events.filter(function(e){
-      return e && typeof e.catId === 'string' && typeof e.title === 'string' &&
-             Number.isFinite(e.day) && typeof e.start === 'string' && typeof e.end === 'string';
-    });
+    if(!s||!Array.isArray(s.cats)||!Array.isArray(s.events))return defaultState();
+    s.startHour=Math.max(0,Math.min(20,+s.startHour||6));
+    s.endHour=Math.max(s.startHour+4,Math.min(24,+s.endHour||22));
+    s.showWeekend=s.showWeekend!==false;
+    if(typeof s.weekStart!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s.weekStart))s.weekStart=ymd(mondayOf(new Date()));
+    s.view=s.view==='day'?'day':'week';
+    s.dayIndex=Math.min(6,Math.max(0,+s.dayIndex||0));
+    s.appTitle=typeof s.appTitle==='string'&&s.appTitle.trim()?s.appTitle:'Lịch của tôi';
+    s.cats=s.cats.filter(c=>c&&typeof c.id==='string'&&typeof c.name==='string');
+    if(!s.cats.length)s.cats=[{id:uid('ct'),name:'Chung',hue:212}];
+    s.events=s.events.filter(e=>e&&typeof e.catId==='string'&&typeof e.title==='string'&&Number.isFinite(e.day)&&typeof e.start==='string'&&typeof e.end==='string');
     return s;
   }
+  function load(){try{const r=localStorage.getItem(KEY);if(r)return sanitize(JSON.parse(r));}catch(e){}return defaultState();}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  let state=load();
 
-  function load(){
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) return sanitize(JSON.parse(raw));
-    } catch (err) { /* storage blocked or bad data */ }
-    return defaultState();
+  function cat(id){return state.cats.find(c=>c.id===id)||{id:'',name:'Chung',hue:212};}
+  function weekMonday(){return parseYMD(state.weekStart);}
+  function gridStart(){return state.startHour*60;}
+  function gridEnd(){return state.endHour*60;}
+  function slots(){return Math.round((gridEnd()-gridStart())/SLOT);}
+
+  function eventsInWeek(ws){return state.events.filter(e=>{const end=ymd(addDays(parseYMD(e.weekStart),(Math.max(1,e.weeks||1)-1)*7));return ws>=e.weekStart&&ws<=end;});}
+  function range(e){let a=toMin(e.start),b=toMin(e.end);if(b<=a)b=a+30;return{a,b};}
+  function conflicts(list){
+    const out=[],timed=list.filter(e=>!e.allday).sort((a,b)=>a.day-b.day||toMin(a.start)-toMin(b.start));
+    for(let i=0;i<timed.length;i++)for(let j=i+1;j<timed.length;j++){
+      const a=timed[i],b=timed[j];if(a.day!==b.day)continue;
+      const ra=range(a),rb=range(b);if(ra.a<rb.b&&rb.a<ra.b)out.push([a,b]);
+    }return out;
   }
-  function save(){
-    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (err) { /* ignore */ }
-  }
-
-  let state = load();
-
-  /* ---------------- helpers ---------------- */
-  function cat(id){
-    return state.cats.find(function(c){ return c.id === id; }) ||
-           { id:'', name:'Chung', hue:212 };
-  }
-  function weekMonday(){ return parseYMD(state.weekStart); }
-  function gridStartMin(){ return state.startHour * 60; }
-  function gridEndMin(){ return state.endHour * 60; }
-  function totalSlots(){ return Math.round((gridEndMin() - gridStartMin()) / SLOT_MIN); }
-
-  function eventsInWeek(ws){
-    return state.events.filter(function(e){
-      const end = ymd(addDays(parseYMD(e.weekStart), (Math.max(1, e.weeks || 1) - 1) * 7));
-      return ws >= e.weekStart && ws <= end;
-    });
-  }
-
-  function evRange(e){
-    if (e.allday) return { a: 0, b: 24*60 };
-    let a = toMin(e.start), b = toMin(e.end);
-    if (b <= a) b = Math.min(a + 30, 24*60);
-    return { a: a, b: b };
-  }
-
-  function conflictsOf(list){
-    const out = [];
-    const timed = list.filter(function(e){ return !e.allday; });
-    const sorted = timed.slice().sort(function(a,b){
-      const ra = evRange(a), rb = evRange(b);
-      return a.day - b.day || ra.a - rb.a;
-    });
-    for (let i = 0; i < sorted.length; i++){
-      for (let j = i+1; j < sorted.length; j++){
-        const a = sorted[i], b = sorted[j];
-        if (a.day !== b.day) continue;
-        const ra = evRange(a), rb = evRange(b);
-        if (ra.a < rb.b && rb.a < ra.b) out.push([a,b]);
-      }
-    }
-    return out;
-  }
-
-  function layoutDay(list){
-    const lanes = new Map();
-    const timed = list.filter(function(e){ return !e.allday; })
-      .map(function(e){ const r = evRange(e); return { e: e, a: r.a, b: r.b }; })
-      .sort(function(x,y){ return x.a - y.a || (y.b-y.a) - (x.b-x.a); });
-    let end = -1, cluster = [];
-    const clusters = [];
-    timed.forEach(function(it){
-      if (it.a >= end){
-        if (cluster.length) clusters.push(cluster);
-        cluster = [it]; end = it.b;
-      } else {
-        cluster.push(it); end = Math.max(end, it.b);
-      }
-    });
-    if (cluster.length) clusters.push(cluster);
-    clusters.forEach(function(cl){
-      const laneEnds = [];
-      const info = new Map();
-      cl.forEach(function(it){
-        let l = 0;
-        while (l < laneEnds.length && laneEnds[l] > it.a) l++;
-        laneEnds[l] = it.b;
-        info.set(it.e.id, l);
-      });
-      cl.forEach(function(it){ lanes.set(it.e.id, { lane: info.get(it.e.id), total: laneEnds.length }); });
-    });
+  function layout(list){
+    const lanes=new Map(),timed=list.map(e=>{const r=range(e);return{e,a:r.a,b:r.b};}).sort((x,y)=>x.a-y.a||(y.b-y.a)-(x.b-x.a));
+    let end=-1,cl=[],cls=[];
+    timed.forEach(it=>{if(it.a>=end){if(cl.length)cls.push(cl);cl=[it];end=it.b;}else{cl.push(it);end=Math.max(end,it.b);}});if(cl.length)cls.push(cl);
+    cls.forEach(cl=>{const ends=[];const info=new Map();cl.forEach(it=>{let l=0;while(l<ends.length&&ends[l]>it.a)l++;ends[l]=it.b;info.set(it.e.id,l);});cl.forEach(it=>lanes.set(it.e.id,{lane:info.get(it.e.id),total:ends.length}));});
     return lanes;
   }
 
-  /* ---------------- rendering ---------------- */
-  let selectedId = null;
-
-  function render(){
-    renderHeader();
-    renderToolbar();
-    renderBoard();
-    renderDrawerIfOpen();
-  }
-
+  let selectedId=null;
+  function render(){renderHeader();renderToolbar();renderBoard();renderDrawerIfOpen();}
   function renderHeader(){
-    $('appTitle').textContent = state.appTitle;
-    const ws = weekMonday();
-    $('semLabel').textContent = 'Tuần ' + isoWeek(ws) + ' · ' + dm(ws) + ' – ' + dm(addDays(ws, 6));
-
-    const list = eventsInWeek(state.weekStart);
-    let busy = 0;
-    const days = state.showWeekend ? 7 : 5;
-    for (let d = 0; d < days; d++){
-      const ranges = list.filter(function(e){ return e.day === d && !e.allday; })
-        .map(evRange).sort(function(a,b){ return a.a - b.a; });
-      let curA = -1, curB = -1;
-      ranges.forEach(function(r){
-        if (r.a > curB){
-          if (curB > curA) busy += curB - curA;
-          curA = r.a; curB = r.b;
-        } else if (r.b > curB) curB = r.b;
-      });
-      if (curB > curA) busy += curB - curA;
+    $('appTitle').textContent=state.appTitle;
+    const ws=weekMonday();$('semLabel').textContent='Tuần '+isoWeek(ws)+' · '+dm(ws)+' – '+dm(addDays(ws,6));
+    const list=eventsInWeek(state.weekStart),days=state.showWeekend?7:5,span=days*(gridEnd()-gridStart());
+    let busy=0;
+    for(let d=0;d<days;d++){
+      const rs=list.filter(e=>e.day===d).map(range).sort((a,b)=>a.a-b.a);let ca=-1,cb=-1;
+      rs.forEach(r=>{if(r.a>cb){if(cb>ca)busy+=cb-ca;ca=r.a;cb=r.b;}else if(r.b>cb)cb=r.b;});if(cb>ca)busy+=cb-ca;
     }
-    const span = days * (gridEndMin() - gridStartMin());
-    const hours = Math.round(busy / 60 * 10) / 10;
-    $('stEvents').textContent = list.filter(function(e){ return !e.allday; }).length;
-    $('stHours').textContent = hours;
-    $('stFree').textContent = Math.max(0, Math.round((span - busy) / 60));
+    $('stEvents').textContent=list.length;$('stHours').textContent=Math.max(0,Math.round((span-busy)/60));
   }
-
   function renderToolbar(){
-    const a = weekMonday(), b = addDays(a, 6);
-    $('weekLabel').innerHTML = 'Tuần ' + isoWeek(a) + '<small>' + dm(a) + ' – ' + dm(b) + '</small>';
-
-    document.querySelectorAll('.seg button').forEach(function(btn){
-      btn.classList.toggle('on', btn.dataset.view === state.view);
-    });
-
-    const pick = $('dayPick');
-    pick.hidden = state.view !== 'day';
-    if (state.view === 'day'){
-      pick.innerHTML = DAYNAMES.map(function(n, i){
-        return '<button data-day="' + i + '" class="' + (i === state.dayIndex ? 'on' : '') + '">' +
-               n.replace('Thứ ', 'T') + ' ' + dm(addDays(a, i)) + '</button>';
-      }).join('');
-    }
-
-    const conflicts = conflictsOf(eventsInWeek(state.weekStart));
-    const chip = $('btnConflicts');
-    chip.hidden = conflicts.length === 0;
-    if (conflicts.length){
-      chip.className = 'chip bad';
-      chip.textContent = '⚠ ' + conflicts.length + ' trùng giờ';
-    }
+    const a=weekMonday(),b=addDays(a,6);
+    $('weekLabel').innerHTML='Tuần '+isoWeek(a)+'<small>'+dm(a)+' – '+dm(b)+'</small>';
+    document.querySelectorAll('.seg button').forEach(btn=>btn.classList.toggle('on',btn.dataset.view===state.view));
+    const pick=$('dayPick');pick.hidden=state.view!=='day';
+    if(state.view==='day')pick.innerHTML=DAYS.map((n,i)=>'<button data-day="'+i+'" class="'+(i===state.dayIndex?'on':'')+'">'+n.replace('Thứ ','T')+' '+dm(addDays(a,i))+'</button>').join('');
+    const chip=$('btnConflicts');const cf=conflicts(eventsInWeek(state.weekStart));chip.hidden=cf.length===0;if(cf.length)chip.textContent='⚠ '+cf.length+' trùng giờ';
   }
-
   function boardDays(){
-    const width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    if (state.view === 'day') return [state.dayIndex];
-    if (!state.forceWeek && width < 700) return [state.dayIndex];
-    return state.showWeekend ? [0,1,2,3,4,5,6] : [0,1,2,3,4];
+    const w=window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth;
+    if(state.view==='day')return [state.dayIndex];
+    return state.showWeekend?[0,1,2,3,4,5,6]:[0,1,2,3,4];
   }
-
   function renderBoard(){
-    const board = $('board');
-    const wrap = $('boardwrap');
-    const days = boardDays();
-    const ws = weekMonday();
-    const list = eventsInWeek(state.weekStart);
-    const todayStr = ymd(new Date());
-    const slots = totalSlots();
-    const bodyH = 'calc(' + slots + ' * var(--slot-h))';
-
-    board.className = 'board';
-    board.style.setProperty('--d', days.length);
-
-    let html = '<div class="corner">Giờ</div>';
-
-    // headers
-    days.forEach(function(d, i){
-      const dt = addDays(ws, d);
-      html += '<div class="dayhead' + (d >= 5 ? ' weekend' : '') +
-        (ymd(dt) === todayStr ? ' today' : '') +
-        '" style="grid-column:' + (i+2) + ';grid-row:1">' +
-        '<span class="wd">' + DAYNAMES[d] + '</span><span class="dt">' + dm(dt) + '</span></div>';
-    });
-
-    // all-day band
-    html += '<div class="allday-gutter">Cả ngày</div>';
-    days.forEach(function(d, i){
-      const ad = list.filter(function(e){ return e.day === d && e.allday; });
-      html += '<div class="allday' + (d >= 5 ? ' weekend' : '') + '" data-allday="' + d +
-        '" style="grid-column:' + (i+2) + ';grid-row:2">' +
-        ad.map(function(e){
-          const c = cat(e.catId);
-          return '<button class="ad-chip" data-id="' + e.id + '" style="--h:' + c.hue + '" title="' +
-                 esc(e.title + (e.place ? ' · ' + e.place : '')) + '"><span>' + esc(e.title) + '</span></button>';
-        }).join('') +
-        (ad.length ? '' : '<button class="ad-add" data-addallday="' + d + '">+ Thêm</button>') +
-        '</div>';
-    });
-
-    // time column
-    html += '<div class="timecol" style="grid-column:1;grid-row:3;height:' + bodyH + '">';
-    for (let h = state.startHour; h <= state.endHour; h++){
-      html += '<div class="tlabel" style="top:calc(' + ((h - state.startHour) * 60 / SLOT_MIN) + ' * var(--slot-h))">' +
-              pad(h) + ':00</div>';
-    }
-    html += '</div>';
-
-    // day bodies
-    days.forEach(function(d, i){
-      const evs = list.filter(function(e){ return e.day === d && !e.allday; });
-      const lanes = layoutDay(evs);
-      const evHtml = evs.map(function(e){
-        const c = cat(e.catId);
-        const r = evRange(e);
-        const lane = lanes.get(e.id) || { lane:0, total:1 };
-        const dur = r.b - r.a;
-        const tiny = dur <= SLOT_MIN ? ' tiny' : '';
-        const sel = e.id === selectedId ? ' selected' : '';
-        return '<button class="ev' + tiny + sel + '" data-id="' + e.id + '" style="--h:' + c.hue +
-          ';top:calc(' + ((r.a - gridStartMin()) / SLOT_MIN) + ' * var(--slot-h) + 1px)' +
-          ';height:calc(' + Math.max(1, dur / SLOT_MIN) + ' * var(--slot-h) - 3px)' +
-          ';left:calc(' + lane.lane + ' * (100% / ' + lane.total + ') + 2px)' +
-          ';width:calc(100% / ' + lane.total + ' - 4px)">' +
-          '<span class="ev-t">' + esc(e.title) + '</span>' +
-          '<span class="ev-m">' + e.start + (e.place ? ' · ' + esc(e.place) : '') + '</span>' +
-          '</button>';
+    const board=$('board'),days=boardDays(),ws=weekMonday(),list=eventsInWeek(state.weekStart),slots=slots(),bodyH='calc('+slots+'*var(--slot-h))';
+    board.style.setProperty('--d',days.length);
+    let html='<div class="corner">Giờ</div>';
+    days.forEach((d,i)=>{const dt=addDays(ws,d);html+='<div class="dayhead'+(d>=5?' weekend':'')+(ymd(dt)===ymd(new Date())?' today':'')+'" style="grid-column:'+(i+2)+';grid-row:1"><span class="wd">'+DAYS[d]+'</span><span class="dt">'+dm(dt)+'</span></div>';});
+    html+='<div class="timecol" style="grid-column:1;grid-row:2;height:'+bodyH+'">';
+    for(let h=state.startHour;h<=state.endHour;h++)html+='<div class="tlabel" style="top:calc('+((h-state.startHour)*60/SLOT)+'*var(--slot-h))">'+pad(h)+':00</div>';
+    html+='</div>';
+    days.forEach((d,i)=>{
+      const evs=list.filter(e=>e.day===d);const lanes=layout(evs);const eh=evs.map(e=>{
+        const c=cat(e.catId),r=range(e),lane=lanes.get(e.id)||{lane:0,total:1};const sel=e.id===selectedId?' selected':'';
+        return '<button class="ev'+sel+'" data-id="'+e.id+'" style="--h:'+c.hue+';top:calc('+((r.a-gridStart())/SLOT)+'*var(--slot-h)+1px);height:calc('+Math.max(1,(r.b-r.a)/SLOT)+'*var(--slot-h)-3px);left:calc('+lane.lane+'*(100%/'+lane.total+')+2px);width:calc(100%/'+lane.total+'-4px)"><span class="ev-t">'+esc(e.title)+'</span><span class="ev-m">'+e.start+(e.place?' · '+esc(e.place):'')+'</span></button>';
       }).join('');
-      html += '<div class="daycol' + (d >= 5 ? ' weekend' : '') + '" data-day="' + d +
-        '" style="grid-column:' + (i+2) + ';grid-row:3">' +
-        '<div class="dbody" style="height:' + bodyH + '">' +
-        '<div class="evs">' + evHtml + '</div></div></div>';
+      html+='<div class="daycol'+(d>=5?' weekend':'')+'" data-day="'+d+'" style="grid-column:'+(i+2)+';grid-row:2"><div class="dbody" style="height:'+bodyH+'"><div class="evs">'+eh+'</div></div></div>';
     });
-
-    board.innerHTML = html;
-
-    const empty = wrap.querySelector('.emptybar');
-    if (empty) empty.remove();
-    if (list.length === 0){
-      const bar = document.createElement('div');
-      bar.className = 'emptybar';
-      bar.textContent = state.events.length === 0
-        ? 'Lịch đang trống. Bấm vào một ô trên lưới để thêm hoạt động đầu tiên.'
-        : 'Tuần này chưa có hoạt động nào. Bấm vào một ô trống để thêm.';
-      wrap.insertBefore(bar, board);
-    }
-
-    drawNowLine(board);
-    applySearch();
+    board.innerHTML=html;
+    const empty=$('boardwrap').querySelector('.emptybar');if(empty)empty.remove();
+    if(list.length===0){const bar=document.createElement('div');bar.className='emptybar';bar.textContent=state.events.length===0?'Lịch trống. Bấm vào ô lưới để thêm hoạt động đầu tiên.':'Tuần này chưa có hoạt động. Bấm vào ô trống để thêm.';$('boardwrap').insertBefore(bar,board);}
+    drawNow(board);applySearch();
   }
-
-  function drawNowLine(board){
-    const now = new Date();
-    const ws = weekMonday();
-    if (ymd(now) < ymd(ws) || ymd(now) > ymd(addDays(ws, 6))) return;
-    const idx = (now.getDay() + 6) % 7;
-    const body = board.querySelector('.daycol[data-day="' + idx + '"] .dbody');
-    if (!body) return;
-    const mins = now.getHours() * 60 + now.getMinutes();
-    if (mins < gridStartMin() || mins > gridEndMin()) return;
-    const line = document.createElement('div');
-    line.className = 'nowline';
-    line.style.top = 'calc(' + ((mins - gridStartMin()) / SLOT_MIN) + ' * var(--slot-h))';
-    body.appendChild(line);
+  function drawNow(board){
+    const now=new Date(),ws=weekMonday();if(ymd(now)<ymd(ws)||ymd(now)>ymd(addDays(ws,6)))return;
+    const idx=(now.getDay()+6)%7,body=board.querySelector('.daycol[data-day="'+idx+'"] .dbody');if(!body)return;
+    const mins=now.getHours()*60+now.getMinutes();if(mins<gridStart()||mins>gridEnd())return;
+    const line=document.createElement('div');line.className='nowline';line.style.top='calc('+((mins-gridStart())/SLOT)+'*var(--slot-h))';body.appendChild(line);
   }
-
   function applySearch(){
-    const q = $('q').value.trim().toLowerCase();
-    document.querySelectorAll('.ev, .ad-chip').forEach(function(el){
-      if (!q){ el.classList.remove('dim'); return; }
-      const e = state.events.find(function(x){ return x.id === el.dataset.id; });
-      if (!e){ el.classList.remove('dim'); return; }
-      const c = cat(e.catId);
-      const hay = (e.title + ' ' + (e.place||'') + ' ' + (e.note||'') + ' ' + c.name + ' ' + DAYNAMES[e.day]).toLowerCase();
-      el.classList.toggle('dim', hay.indexOf(q) === -1);
-    });
+    const q=$('q').value.trim().toLowerCase();document.querySelectorAll('.ev').forEach(el=>{if(!q){el.classList.remove('dim');return;}const e=state.events.find(x=>x.id===el.dataset.id);if(!e){el.classList.remove('dim');return;}const c=cat(e.catId);const hay=(e.title+' '+(e.place||'')+' '+(e.note||'')+' '+c.name+' '+DAYS[e.day]).toLowerCase();el.classList.toggle('dim',hay.indexOf(q)===-1);});
   }
-
-  /* ---------------- drawer ---------------- */
-  let drawerMode = 'event';
-
-  function openDrawer(){
-    $('scrim').classList.add('on');
-    $('drawer').classList.add('open');
-    $('drawer').setAttribute('aria-hidden', 'false');
-  }
-  function closeDrawer(){
-    $('scrim').classList.remove('on');
-    $('drawer').classList.remove('open');
-    $('drawer').setAttribute('aria-hidden', 'true');
-    if (drawerMode === 'event'){ selectedId = null; renderBoard(); }
-  }
-  function renderDrawerIfOpen(){
-    if (!$('drawer').classList.contains('open')) return;
-    if (drawerMode === 'event'){
-      if (selectedId) renderEventDrawer(selectedId);
-      else closeDrawer();
-    } else if (drawerMode === 'agenda') renderAgendaDrawer();
-    else if (drawerMode === 'conflicts') renderConflictsDrawer();
-  }
-
-  function openEvent(id){
-    selectedId = id;
-    drawerMode = 'event';
-    renderEventDrawer(id);
-    openDrawer();
-    renderBoard();
-  }
-
+  function openDrawer(){$('scrim').classList.add('on');$('drawer').classList.add('open');$('drawer').setAttribute('aria-hidden','false');}
+  function closeDrawer(){$('scrim').classList.remove('on');$('drawer').classList.remove('open');$('drawer').setAttribute('aria-hidden','true');if(selectedId){selectedId=null;renderBoard();}}
+  function renderDrawerIfOpen(){if(!$('drawer').classList.contains('open'))return;if(selectedId)renderEventDrawer(selectedId);else closeDrawer();}
+  function openEvent(id){selectedId=id;renderEventDrawer(id);openDrawer();renderBoard();}
   function renderEventDrawer(id){
-    const e = state.events.find(function(x){ return x.id === id; });
-    if (!e){ closeDrawer(); return; }
-    const c = cat(e.catId);
-    const date = addDays(weekMonday(), e.day);
-    const r = evRange(e);
-    const list = eventsInWeek(state.weekStart);
-    const bad = conflictsOf(list).filter(function(pair){
-      return pair[0].id === id || pair[1].id === id;
-    }).map(function(pair){
-      return (pair[0].id === id ? pair[1] : pair[0]).title;
-    });
-
-    $('dwEyebrow').textContent = c.name;
-    $('dwBody').innerHTML =
-      '<div class="dw-title"><div class="huebar" style="--h:' + c.hue + '"></div><div style="min-width:0">' +
-        '<h2>' + esc(e.title) + '</h2>' +
-        '<p class="dw-sub">' + DAYNAMES[e.day] + ', ' + dm(date) + ' · Tuần ' + isoWeek(date) + '</p>' +
-      '</div></div>' +
-      (bad.length ? '<div class="dw-warn">Trùng giờ với: ' + esc(bad.join(', ')) + '</div>' : '') +
-      '<dl class="kv">' +
-        '<dt>Thời gian</dt><dd>' + (e.allday ? 'Cả ngày' : fmtRange(e.start, e.end) + ' · ' + durationText(r.b - r.a)) + '</dd>' +
-        '<dt>Địa điểm</dt><dd>' + esc(e.place || 'Chưa ghi') + '</dd>' +
-        '<dt>Ghi chú</dt><dd>' + esc(e.note || '—') + '</dd>' +
-        '<dt>Lặp lại</dt><dd>' + (e.weeks > 1 ? 'Hằng tuần, ' + e.weeks + ' tuần từ ' + dm(parseYMD(e.weekStart)) : 'Chỉ tuần này') + '</dd>' +
-      '</dl>' +
-      '<div class="dw-actions">' +
-        '<button class="btn primary sm" data-act="edit">Sửa</button>' +
-        (e.allday ? '' : '<button class="btn sm" data-act="earlier">Sớm 30 phút</button>' +
-                       '<button class="btn sm" data-act="later">Muộn 30 phút</button>') +
-        '<button class="btn sm" data-act="next">Sang tuần sau</button>' +
-        '<button class="btn danger sm" data-act="delete">Xóa</button>' +
-      '</div>';
+    const e=state.events.find(x=>x.id===id);if(!e){closeDrawer();return;}const c=cat(e.catId);const date=addDays(weekMonday(),e.day);const r=range(e);const cf=conflicts(eventsInWeek(state.weekStart)).filter(p=>p[0].id===id||p[1].id===id).map(p=>(p[0].id===id?p[1]:p[0]).title);
+    $('dwEyebrow').textContent=c.name;$('dwBody').innerHTML=
+    '<div class="dw-title"><div class="huebar" style="--h:'+c.hue+'"></div><div style="min-width:0"><h2>'+esc(e.title)+'</h2><p class="dw-sub">'+DAYS[e.day]+', '+dm(date)+' · Tuần '+isoWeek(date)+'</p></div></div>'+
+    (cf.length?'<div class="hint warn">Trùng giờ với: '+esc(cf.join(', '))+'</div>':'')+
+    '<dl class="kv"><dt>Thời gian</dt><dd>'+fmt(e.start,e.end)+' · '+durText(r.b-r.a)+'</dd><dt>Địa điểm</dt><dd>'+esc(e.place||'—')+'</dd><dt>Ghi chú</dt><dd>'+esc(e.note||'—')+'</dd><dt>Lặp lại</dt><dd>'+(e.weeks>1?'Hằng tuần, '+e.weeks+' tuần':'Chỉ tuần này')+'</dd></dl>'+
+    '<div class="dw-actions"><button class="btn primary sm" data-act="edit">Sửa</button><button class="btn sm" data-act="next">Sang tuần sau</button><button class="btn danger sm" data-act="delete">Xóa</button></div>';
   }
-
+  function fmt(a,b){return a+' – '+b;}
   function renderAgendaDrawer(){
-    const ws = weekMonday();
-    const list = eventsInWeek(state.weekStart).slice().sort(function(a,b){
-      if (a.day !== b.day) return a.day - b.day;
-      if (a.allday !== b.allday) return a.allday ? -1 : 1;
-      return toMin(a.start) - toMin(b.start);
-    });
-    const todayStr = ymd(new Date());
-    $('dwEyebrow').textContent = 'Tuần ' + isoWeek(ws) + ' · ' + dm(ws) + ' – ' + dm(addDays(ws,6));
-    if (list.length === 0){
-      $('dwBody').innerHTML = '<p class="hint">Tuần này chưa có hoạt động nào.</p>';
-      return;
-    }
-    let html = '', current = -1;
-    list.forEach(function(e){
-      if (e.day !== current){
-        current = e.day;
-        const d = addDays(ws, e.day);
-        html += '<div class="agenda-day">' + DAYNAMES[e.day] + ' · ' + dm(d) +
-                (ymd(d) === todayStr ? ' · Hôm nay' : '') + '</div>';
-      }
-      const c = cat(e.catId);
-      html += '<button class="agenda-item" data-agenda="' + e.id + '">' +
-        '<span class="t" style="color:hsl(' + c.hue + ' 55% 45%)">' + (e.allday ? 'Cả ngày' : e.start) + '</span>' +
-        '<span><b>' + esc(e.title) + '</b><small>' + esc(c.name) +
-        (e.place ? ' · ' + esc(e.place) : '') + '</small></span></button>';
-    });
-    $('dwBody').innerHTML = '<div class="agenda">' + html + '</div>';
+    const ws=weekMonday(),list=eventsInWeek(ws).sort((a,b)=>a.day-b.day||toMin(a.start)-toMin(b.start));const today=ymd(new Date());
+    $('dwEyebrow').textContent='Tuần '+isoWeek(ws)+' · '+dm(ws)+' – '+dm(addDays(ws,6));
+    if(!list.length){$('dwBody').innerHTML='<p class="hint">Tuần này chưa có hoạt động nào.</p>';return;}
+    let html='',cur=-1;list.forEach(e=>{if(e.day!==cur){cur=e.day;const dd=addDays(ws,e.day);html+='<div class="agenda-day">'+DAYS[e.day]+' · '+dm(dd)+(ymd(dd)===today?' · Hôm nay':'')+'</div>';}const c=cat(e.catId);html+='<button class="agenda-item" data-agenda="'+e.id+'"><span class="t">'+e.start+'</span><span><b>'+esc(e.title)+'</b><small>'+c.name+(e.place?' · '+esc(e.place):'')+'</small></span></button>';});
+    $('dwBody').innerHTML='<div class="agenda" style="display:flex;flex-direction:column;gap:6px">'+html+'</div>';
+    const style=$('dwBody').querySelector('.agenda-item');if(style){Object.assign(style.style,{display:'grid',gridTemplateColumns:'52px 1fr',gap:'10px',alignItems:'baseline',textAlign:'left',padding:'8px 10px',borderRadius:'9px',border:'1px solid '+getComputedStyle(document.documentElement).borderColor||'var(--line)',background:'var(--surface)',cursor:'pointer',fontSize:'13px'});}
   }
-
   function renderConflictsDrawer(){
-    const pairs = conflictsOf(eventsInWeek(state.weekStart));
-    $('dwEyebrow').textContent = 'Kiểm tra trùng giờ';
-    if (pairs.length === 0){
-      $('dwBody').innerHTML = '<p class="hint">Không có hoạt động nào trùng thời gian trong tuần này.</p>';
-      return;
-    }
-    $('dwBody').innerHTML = pairs.map(function(pair){
-      const a = pair[0], b = pair[1];
-      return '<div class="conflict-item"><b>' + DAYNAMES[a.day] + ' ' + dm(addDays(weekMonday(), a.day)) + '</b><br>' +
-        esc(a.title) + ' (' + a.start + '–' + a.end + ') và ' +
-        esc(b.title) + ' (' + b.start + '–' + b.end + ').</div>';
-    }).join('') +
-    '<p class="hint" style="margin-top:12px">Bấm vào hoạt động trên lưới để sửa hoặc dời giờ.</p>';
+    const pairs=conflicts(eventsInWeek(weekMonday()));$('dwEyebrow').textContent='Kiểm tra trùng giờ';
+    if(!pairs.length){$('dwBody').innerHTML='<p class="hint">Không có hoạt động trùng giờ trong tuần này.</p>';return;}
+    $('dwBody').innerHTML=pairs.map(p=>{const a=p[0],b=p[1];return '<div style="padding:10px 12px;border-radius:9px;border:1px solid color-mix(in srgb,#b3352c 30%,var(--line));font-size:12.5px;margin-top:8px"><b>'+DAYS[a.day]+' '+dm(addDays(weekMonday(),a.day))+'</b><br>'+esc(a.title)+' ('+a.start+'–'+a.end+') và '+esc(b.title)+' ('+b.start+'–'+b.end+').</div>';}).join('')+'<p class="hint" style="margin-top:12px">Bấm vào hoạt động trên lưới để sửa hoặc dời giờ.</p>';
   }
-
-  /* ---------------- editor ---------------- */
-  let editingId = null;
-  let editHue = HUES[0];
-
-  function fillSelect(el, items){
-    el.innerHTML = items.map(function(it){
-      return '<option value="' + esc(it.v) + '">' + esc(it.t) + '</option>';
-    }).join('');
-  }
-
+  let editingId=null,editHue=HUES[0];
+  function fillSel(el,items){el.innerHTML=items.map(it=>'<option value="'+esc(it.v)+'">'+esc(it.t)+'</option>').join('');}
   function openEditor(opts){
-    opts = opts || {};
-    editingId = opts.id || null;
-    const e = editingId ? state.events.find(function(x){ return x.id === editingId; }) : null;
-    const ws = weekMonday();
-
-    $('edTitle').textContent = e ? 'Sửa hoạt động' : 'Thêm hoạt động';
-    $('edDelete').hidden = !e;
-    $('edSave').textContent = e ? 'Lưu thay đổi' : 'Thêm vào lịch';
-    $('edHint').textContent = 'Áp dụng từ tuần ' + isoWeek(ws) + ' (' + dm(ws) + ')';
-
-    $('edCat').innerHTML = state.cats.map(function(c){
-      return '<option value="' + c.id + '">' + esc(c.name) + '</option>';
-    }).join('') + '<option value="__new">＋ Loại mới…</option>';
-
-    fillSelect($('edDay'), DAYNAMES.map(function(n, i){
-      return { v: i, t: n + ', ' + dm(addDays(ws, i)) };
-    }));
-    fillSelect($('edWeeks'), [1,2,3,4,6,8,12,16].map(function(n){
-      return { v: n, t: n === 1 ? 'Chỉ tuần này' : 'Hằng tuần · ' + n + ' tuần' };
-    }));
-
-    const defStart = opts.start || hhmm(gridStartMin() + 2 * 60);
-    if (e){
-      $('edName').value = e.title;
-      $('edCat').value = e.catId;
-      $('edDay').value = String(e.day);
-      $('edWeeks').value = String(e.weeks || 1);
-      $('edStart').value = e.start;
-      $('edEnd').value = e.end;
-      $('edAllday').checked = !!e.allday;
-      $('edPlace').value = e.place || '';
-      $('edNote').value = e.note || '';
-    } else {
-      $('edName').value = '';
-      $('edCat').value = state.cats[0].id;
-      $('edDay').value = String(opts.day != null ? opts.day : 0);
-      $('edWeeks').value = '1';
-      $('edStart').value = defStart;
-      $('edEnd').value = hhmm(toMin(defStart) + 60);
-      $('edAllday').checked = !!opts.allday;
-      $('edPlace').value = '';
-      $('edNote').value = '';
-    }
-
-    $('edNewCat').value = '';
-    editHue = HUES[state.cats.length % HUES.length];
-    renderSwatches();
-    syncNewCat();
-    syncAllday();
-    checkEditorConflict();
-    $('editor').hidden = false;
-    setTimeout(function(){
-      (($('edCat').value === '__new') ? $('edNewCat') : $('edName')).focus();
-    }, 30);
+    opts=opts||{};editingId=opts.id||null;const e=editingId?state.events.find(x=>x.id===editingId):null;const ws=weekMonday();
+    $('edTitle').textContent=e?'Sửa hoạt động':'Thêm hoạt động';$('edDelete').hidden=!e;$('edSave').textContent=e?'Lưu thay đổi':'Thêm vào lịch';$('edHint').textContent='Áp dụng từ tuần '+isoWeek(ws)+' ('+dm(ws)+')';
+    fillSel($('edCat'),state.cats.map(c=>({v:c.id,t:c.name})).concat({v:'__new',t:'＋ Loại mới…'}));
+    fillSel($('edDay'),DAYS.map((n,i)=>({v:i,t:n+', '+dm(addDays(ws,i))})));
+    fillSel($('edStart'),[]);for(let h=state.startHour;h<state.endHour;h++)for(let m of [0,30]){$('edStart').insertAdjacentHTML('beforeend','<option value="'+pad(h)+':'+pad(m)+'">'+pad(h)+':'+pad(m)+'</option>');}
+    fillSel($('edEnd'),[]);for(let h=state.startHour;h<=state.endHour;h++)for(let m of [0,30]){if(h===state.endHour&&m>0)continue;$('edEnd').insertAdjacentHTML('beforeend','<option value="'+pad(h)+':'+pad(m)+'">'+pad(h)+':'+pad(m)+'</option>');}
+    if(e){$('edName').value=e.title;$('edCat').value=e.catId;$('edDay').value=String(e.day);$('edStart').value=e.start;$('edEnd').value=e.end;$('edPlace').value=e.place||'';$('edNote').value=e.note||'';}else{$('edName').value='';$('edCat').value=state.cats[0].id;$('edDay').value=String(opts.day!=null?opts.day:0);$('edStart').value=opts.start||hhmm(gridStart()+2*60);$('edEnd').value=opts.end||hhmm(Math.min(gridStart()+3*60,gridEnd()));$('edPlace').value='';$('edNote').value='';}
+    editHue=HUES[state.cats.length%HUES.length];renderSwatches();$('editor').hidden=false;setTimeout(()=>(($('edCat').value==='__new'?$('edNewCat')||$('edName'):$('edName')).focus()),30);
   }
-
-  function renderSwatches(){
-    $('edSwatches').innerHTML = HUES.map(function(h){
-      return '<button type="button" class="swatch' + (h === editHue ? ' on' : '') +
-             '" data-hue="' + h + '" style="background:hsl(' + h + ' 58% 48%)" aria-label="Màu ' + h + '"></button>';
-    }).join('');
-  }
-  function syncNewCat(){ $('newCatRow').hidden = $('edCat').value !== '__new'; }
-  function syncAllday(){
-    const on = $('edAllday').checked;
-    $('edStart').disabled = on;
-    $('edEnd').disabled = on;
-  }
-
-  function checkEditorConflict(){
-    const warn = $('edWarn');
-    if ($('edAllday').checked){ warn.hidden = true; return; }
-    const day = +$('edDay').value;
-    const a = toMin($('edStart').value || '00:00');
-    let b = toMin($('edEnd').value || '00:00');
-    if (b <= a) b = a + 30;
-    const ws = state.weekStart;
-    const hits = state.events.filter(function(e){
-      if (e.id === editingId || e.allday || e.day !== day) return false;
-      if (ws < e.weekStart) return false;
-      const end = ymd(addDays(parseYMD(e.weekStart), (Math.max(1, e.weeks||1) - 1) * 7));
-      if (ws > end) return false;
-      const r = evRange(e);
-      return a < r.b && r.a < b;
-    });
-    if (hits.length){
-      warn.hidden = false;
-      warn.textContent = 'Trùng giờ với ' + hits.map(function(e){ return e.title; }).join(', ') + '. Vẫn có thể lưu.';
-    } else warn.hidden = true;
-  }
-
-  function closeEditor(){ $('editor').hidden = true; editingId = null; }
-
+  function renderSwatches(){$('edSwatches').innerHTML=HUES.map(h=>'<button type="button" class="swatch'+(h===editHue?' on':'')+'" data-hue="'+h+'" style="background:hsl('+h+' 58% 48%)" aria-label="Màu '+h+'"></button>').join('');}
+  function closeEditor(){$('editor').hidden=true;editingId=null;}
   function submitEditor(ev){
-    ev.preventDefault();
-    const name = $('edName').value.trim();
-    if (!name){
-      $('edName').focus();
-      $('edHint').textContent = 'Nhập tên hoạt động để tiếp tục.';
-      return;
-    }
-
-    let catId = $('edCat').value;
-    if (catId === '__new'){
-      const cn = $('edNewCat').value.trim();
-      if (!cn){
-        $('edNewCat').focus();
-        $('edHint').textContent = 'Nhập tên loại mới để tiếp tục.';
-        return;
-      }
-      const c = { id: uid('ct'), name: cn, hue: editHue };
-      state.cats.push(c);
-      catId = c.id;
-    }
-
-    const allday = $('edAllday').checked;
-    let start = allday ? '00:00' : ($('edStart').value || '08:00');
-    let end = allday ? '23:59' : ($('edEnd').value || '09:00');
-    if (!allday && toMin(end) <= toMin(start)) end = hhmm(Math.min(toMin(start) + 30, 24*60));
-
-    const payload = {
-      catId: catId,
-      title: name,
-      day: +$('edDay').value,
-      start: start,
-      end: end,
-      allday: allday,
-      weeks: +$('edWeeks').value,
-      place: $('edPlace').value.trim(),
-      note: $('edNote').value.trim()
-    };
-
-    if (editingId){
-      Object.assign(state.events.find(function(x){ return x.id === editingId; }), payload);
-      selectedId = editingId;
-    } else {
-      const e = Object.assign({ id: uid('ev'), weekStart: state.weekStart }, payload);
-      state.events.push(e);
-      selectedId = e.id;
-    }
-    const wasEditing = !!editingId;
-    save();
-    closeEditor();
-    render();
-    const confl = conflictsOf(eventsInWeek(state.weekStart)).length;
-    toast(wasEditing ? 'Đã lưu thay đổi' : 'Đã thêm hoạt động' + (confl ? ' · ' + confl + ' trùng giờ' : ''));
+    ev.preventDefault();const name=$('edName').value.trim();if(!name){$('edName').focus();$('edHint').textContent='Nhập tên hoạt động.';return;}
+    let catId=$('edCat').value;if(catId==='__new'){const cn=$('edNewCat').value.trim();if(!cn){$('edNewCat').focus();$('edHint').textContent='Nhập tên loại mới.';return;}const c={id:uid('ct'),name:cn,hue:editHue};state.cats.push(c);catId=c.id;}
+    const start=$('edStart').value||'08:00',end=$('edEnd').value||'09:00';const payload={catId,title:name,day:+$('edDay').value,start,end,place:$('edPlace').value.trim(),note:$('edNote').value.trim(),weeks:1,weekStart:state.weekStart};
+    if(editingId){Object.assign(state.events.find(x=>x.id===editingId),payload);selectedId=editingId;}else{const e=Object.assign({id:uid('ev')},payload);state.events.push(e);selectedId=e.id;}
+    save();closeEditor();render();const cfl=conflicts(eventsInWeek(state.weekStart)).length;toast(editingId?'Đã lưu thay đổi':'Đã thêm hoạt động'+(cfl?' · '+cfl+' trùng giờ':''));
   }
-
   function deleteEvent(id){
-    const idx = state.events.findIndex(function(e){ return e.id === id; });
-    if (idx === -1) return;
-    const removed = state.events[idx];
-    state.events.splice(idx, 1);
-    selectedId = null;
-    save();
-    render();
-    closeDrawer();
-    toast('Đã xóa hoạt động', 'Hoàn tác', function(){
-      state.events.splice(idx, 0, removed);
-      save(); render();
-      toast('Đã khôi phục');
-    });
+    const i=state.events.findIndex(e=>e.id===id);if(i===-1)return;const r=state.events[i];state.events.splice(i,1);selectedId=null;save();render();closeDrawer();toast('Đã xóa','Hoàn tác',()=>{state.events.splice(i,0,r);save();render();toast('Đã khôi phục');});
   }
-
-  /* ---------------- settings ---------------- */
-  function openSettings(){
-    $('setTitleInput').value = state.appTitle;
-    $('setStartH').innerHTML = [];
-    for (let h = 0; h <= 12; h++) $('setStartH').insertAdjacentHTML('beforeend', '<option value="' + h + '">' + pad(h) + ':00</option>');
-    $('setEndH').innerHTML = [];
-    for (let h = 12; h <= 24; h++) $('setEndH').insertAdjacentHTML('beforeend', '<option value="' + h + '">' + pad(h) + ':00</option>');
-    $('setStartH').value = String(state.startHour);
-    $('setEndH').value = String(state.endHour);
-    $('setWeekend').value = state.showWeekend ? '1' : '0';
-    $('settings').hidden = false;
-  }
-  function saveSettings(){
-    state.appTitle = $('setTitleInput').value.trim() || 'Lịch của tôi';
-    const s = +$('setStartH').value, e = +$('setEndH').value;
-    state.startHour = s;
-    state.endHour = Math.max(s + 4, e);
-    state.showWeekend = $('setWeekend').value === '1';
-    if (!state.showWeekend && state.dayIndex >= 5) state.dayIndex = 0;
-    state.events.forEach(function(ev){
-      if (ev.allday || ev.start >= hhmm(gridStartMin()) && ev.end <= hhmm(gridEndMin())) return;
-      if (toMin(ev.start) < gridStartMin()) ev.start = hhmm(gridStartMin());
-      if (toMin(ev.end) > gridEndMin()) ev.end = hhmm(gridEndMin());
-      if (toMin(ev.end) <= toMin(ev.start)) ev.end = hhmm(toMin(ev.start) + 30);
-    });
-    save(); render();
-    $('settings').hidden = true;
-    toast('Đã lưu cài đặt');
-  }
-  function resetAll(){
-    const keep = { appTitle: state.appTitle, startHour: state.startHour, endHour: state.endHour,
-                   showWeekend: state.showWeekend, weekStart: state.weekStart,
-                   view: state.view, dayIndex: state.dayIndex, forceWeek: state.forceWeek };
-    state = Object.assign(keep, { cats: [], events: [] });
-    save(); render();
-    $('settings').hidden = true;
-    toast('Đã làm trống lịch');
-  }
-
-  /* ---------------- copy ---------------- */
-  function copyText(text){
-    function fallback(){
-      const ta = document.createElement('textarea');
-      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-      document.body.appendChild(ta); ta.select();
-      let ok = false;
-      try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
-      document.body.removeChild(ta);
-      toast(ok ? 'Đã sao chép lịch tuần' : 'Không thể sao chép — hãy chọn văn bản thủ công');
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(function(){ toast('Đã sao chép lịch tuần'); }, fallback);
-    } else fallback();
-  }
-
+  function openSettings(){$('setTitle').value=state.appTitle;$('setStart').innerHTML=[];for(let h=0;h<=20;h++)$('setStart').insertAdjacentHTML('beforeend','<option value="'+h+'">'+pad(h)+':00</option>');$('setEnd').innerHTML=[];for(let h=4;h<=24;h++)$('setEnd').insertAdjacentHTML('beforeend','<option value="'+h+'">'+pad(h)+':00</option>');$('setStart').value=String(state.startHour);$('setEnd').value=String(state.endHour);$('setWeekend').value=state.showWeekend?'1':'0';$('settings').hidden=false;}
+  function saveSettings(){state.appTitle=$('setTitle').value.trim()||'Lịch của tôi';state.startHour=+$('setStart').value;state.endHour=Math.max(state.startHour+4,+$('setEnd').value);state.showWeekend=$('setWeekend').value==='1';if(!state.showWeekend&&state.dayIndex>=5)state.dayIndex=0;state.events.forEach(e=>{if(toMin(e.start)<gridStart())e.start=hhmm(gridStart());if(toMin(e.end)>gridEnd())e.end=hhmm(gridEnd());if(toMin(e.end)<=toMin(e.start))e.end=hhmm(toMin(e.start)+30);});save();render();$('settings').hidden=true;toast('Đã lưu cài đặt');}
+  function resetAll(){state=Object.assign(defaultState(),{appTitle:state.appTitle});save();render();$('settings').hidden=true;toast('Đã làm trống lịch');}
+  function copyText(t){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>toast('Đã sao chép'),f);}else f();function f(){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy');}catch(e){ok=false;}document.body.removeChild(ta);toast(ok?'Đã sao chép':'Không thể sao chép');}}
   function copyWeek(){
-    const ws = weekMonday();
-    const list = eventsInWeek(state.weekStart).slice().sort(function(a,b){
-      if (a.day !== b.day) return a.day - b.day;
-      return toMin(a.start) - toMin(b.start);
-    });
-    let out = 'LỊCH TUẦN ' + isoWeek(ws) + ' (' + dm(ws) + ' – ' + dm(addDays(ws,6)) + ')\n' + state.appTitle + '\n';
-    if (!list.length) out += '\n(Tuần trống)\n';
-    let cur = -1;
-    list.forEach(function(e){
-      if (e.day !== cur){ cur = e.day; out += '\n' + DAYNAMES[e.day] + ', ' + dm(addDays(ws, e.day)) + '\n'; }
-      out += '  ' + (e.allday ? 'Cả ngày  ' : e.start + '–' + e.end + '  ') + e.title +
-             '  ·  ' + cat(e.catId).name + (e.place ? '  ·  ' + e.place : '') + '\n';
-    });
-    copyText(out);
-  }
-
-  /* ---------------- toast ---------------- */
-  let toastTimer = null;
-  function toast(msg, actionLabel, action){
-    const el = $('toast');
-    el.innerHTML = '<span>' + esc(msg) + '</span>';
-    if (actionLabel){
-      const b = document.createElement('button');
-      b.textContent = actionLabel;
-      b.addEventListener('click', function(){ el.classList.remove('on'); action(); });
-      el.appendChild(b);
-    }
-    el.classList.add('on');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ el.classList.remove('on'); }, actionLabel ? 6000 : 2600);
-  }
-
-  /* ---------------- pointer: drag & create ---------------- */
-  const board = $('board');
-  let drag = null;
-  let suppressClick = false;
-  let ghost = null;
-
-  function snapMinutes(y, bodyEl, grabOffset){
-    const rect = bodyEl.getBoundingClientRect();
-    let m = gridStartMin() + ((y - rect.top) / 2 * SLOT_MIN);
-    m -= grabOffset;
-    m = Math.round(m / SLOT_MIN) * SLOT_MIN;
-    return Math.max(gridStartMin(), Math.min(gridEndMin() - SLOT_MIN, m));
-  }
-
-  board.addEventListener('pointerdown', function(e){
-    const evEl = e.target.closest('.ev');
-    if (!evEl) return;
-    const rect = evEl.getBoundingClientRect();
-    drag = { id: evEl.dataset.id, el: evEl, x: e.clientX, y: e.clientY, moved: false,
-             grabOffset: ((e.clientY - rect.top) / rect.height * (evRangeById(evEl.dataset.id).dur)) || 0 };
-  });
-
-  function evRangeById(id){
-    const e = state.events.find(function(x){ return x.id === id; });
-    if (!e) return { dur: 60 };
-    const r = evRange(e);
-    return { dur: r.b - r.a };
-  }
-
-  window.addEventListener('pointermove', function(e){
-    if (!drag) return;
-    if (!drag.moved){
-      if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 7) return;
-      drag.moved = true;
-      drag.el.classList.add('dragging');
-      drag.el.style.pointerEvents = 'none';
-      document.body.classList.add('grabbing');
-      ghost = document.createElement('div');
-      ghost.className = 'ghost';
-      document.body.appendChild(ghost);
-      ghost.style.display = 'none';
-    }
-    if (ghost) ghost.style.display = 'none';
-    const under = document.elementFromPoint(e.clientX, e.clientY);
-    const bodyEl = under && under.closest ? under.closest('.dbody') : null;
-    document.querySelectorAll('.dbody.drag-over').forEach(function(x){ x.classList.remove('drag-over'); });
-    if (!bodyEl) return;
-    bodyEl.classList.add('drag-over');
-    const start = snapMinutes(e.clientY, bodyEl, drag.grabOffset);
-    const dur = evRangeById(drag.id).dur;
-    if (ghost){
-      const r = bodyEl.getBoundingClientRect();
-      ghost.style.display = '';
-      ghost.style.top = (r.top + window.scrollY + (start - gridStartMin()) / SLOT_MIN * slotH()) + 'px';
-      ghost.style.left = (r.left + 2) + 'px';
-      ghost.style.width = (r.width - 4) + 'px';
-      ghost.style.height = (dur / SLOT_MIN * slotH() - 3) + 'px';
-    }
-    drag.targetDay = +bodyEl.closest('.daycol').dataset.day;
-    drag.targetStart = start;
-  });
-
-  function slotH(){
-    return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--slot-h')) ||
-           parseFloat(getComputedStyle(board).getPropertyValue('--slot-h')) || 26;
-  }
-
-  window.addEventListener('pointerup', function(){
-    if (!drag) return;
-    const d = drag;
-    drag = null;
-    document.body.classList.remove('grabbing');
-    document.querySelectorAll('.dbody.drag-over').forEach(function(x){ x.classList.remove('drag-over'); });
-    d.el.classList.remove('dragging');
-    d.el.style.pointerEvents = '';
-    if (ghost){ ghost.remove(); ghost = null; }
-    if (!d.moved) return;
-
-    suppressClick = true;
-    setTimeout(function(){ suppressClick = false; }, 90);
-
-    if (d.targetDay != null && d.targetStart != null){
-      const ev = state.events.find(function(x){ return x.id === d.id; });
-      if (ev){
-        const r = evRange(ev), dur = r.b - r.a;
-        ev.day = d.targetDay;
-        ev.start = hhmm(d.targetStart);
-        ev.end = hhmm(Math.min(d.targetStart + dur, 24*60));
-        save(); render();
-        toast('Đã dời đến ' + DAYNAMES[ev.day] + ' ' + ev.start);
-      }
-    }
-  });
-
-  board.addEventListener('click', function(e){
-    if (suppressClick) return;
-    if (!e.target.closest) return;
-    const chip = e.target.closest('.ad-chip');
-    if (chip){ openEvent(chip.dataset.id); return; }
-    const addAll = e.target.closest('.ad-add');
-    if (addAll){ openEditor({ day: +addAll.dataset.addallday, allday: true }); return; }
-    const evEl = e.target.closest('.ev');
-    if (evEl){ openEvent(evEl.dataset.id); return; }
-    const bodyEl = e.target.closest('.dbody');
-    if (bodyEl){
-      const day = +bodyEl.closest('.daycol').dataset.day;
-      const rect = bodyEl.getBoundingClientRect();
-      let m = gridStartMin() + ((e.clientY - rect.top) / 2 * SLOT_MIN);
-      m = Math.floor(m / SLOT_MIN) * SLOT_MIN;
-      m = Math.max(gridStartMin(), Math.min(gridEndMin() - 60, m));
-      openEditor({ day: day, start: hhmm(m) });
-    }
-  });
-
-  board.addEventListener('dblclick', function(e){
-    const evEl = e.target.closest('.ev');
-    if (evEl) openEditor({ id: evEl.dataset.id });
-  });
-
-  document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape'){
-      if (!$('editor').hidden){ closeEditor(); return; }
-      if (!$('settings').hidden){ $('settings').hidden = true; return; }
-      closeDrawer();
-    }
-  });
-
-  /* ---------------- drawer actions ---------------- */
-  $('dwBody').addEventListener('click', function(e){
-    const agenda = e.target.closest('[data-agenda]');
-    if (agenda){ drawerMode = 'event'; openEvent(agenda.dataset.agenda); return; }
-    const act = e.target.closest('[data-act]');
-    if (!act || !selectedId) return;
-    const ev = state.events.find(function(x){ return x.id === selectedId; });
-    if (!ev) return;
-    const a = act.dataset.act;
-    if (a === 'edit'){ closeDrawer(); openEditor({ id: selectedId }); }
-    else if (a === 'delete') deleteEvent(selectedId);
-    else if (a === 'earlier' || a === 'later'){
-      const delta = a === 'earlier' ? -30 : 30;
-      let s = toMin(ev.start) + delta, en = toMin(ev.end) + delta;
-      if (s < gridStartMin() || en > 24*60) return;
-      ev.start = hhmm(s); ev.end = hhmm(en);
-      save(); render();
-    } else if (a === 'next'){
-      state.events.push(Object.assign({}, ev, {
-        id: uid('ev'), weekStart: ymd(addDays(parseYMD(ev.weekStart), 7)), weeks: 1
-      }));
-      save(); render();
-      toast('Đã thêm sang tuần sau');
-    }
-  });
-
-  $('dwClose').addEventListener('click', closeDrawer);
-  $('scrim').addEventListener('click', closeDrawer);
-
-  /* ---------------- toolbar wiring ---------------- */
-  document.querySelectorAll('.seg button').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      state.view = btn.dataset.view;
-      state.forceWeek = btn.dataset.view === 'week';
-      save(); render();
-    });
-  });
-
-  $('dayPick').addEventListener('click', function(e){
-    const b = e.target.closest('[data-day]');
-    if (!b) return;
-    state.dayIndex = +b.dataset.day;
-    save(); render();
-  });
-
-  $('prevWk').addEventListener('click', function(){ state.weekStart = ymd(addDays(weekMonday(), -7)); save(); render(); });
-  $('nextWk').addEventListener('click', function(){ state.weekStart = ymd(addDays(weekMonday(), 7)); save(); render(); });
-  $('btnToday').addEventListener('click', function(){
-    const now = new Date();
-    state.weekStart = ymd(mondayOf(now));
-    state.dayIndex = (now.getDay() + 6) % 7;
-    save(); render();
-  });
-
-  $('btnAdd').addEventListener('click', function(){ openEditor({}); });
-  $('btnCopy').addEventListener('click', copyWeek);
-  $('btnSettings').addEventListener('click', openSettings);
-  $('btnAgenda').addEventListener('click', function(){ drawerMode = 'agenda'; renderAgendaDrawer(); openDrawer(); });
-  $('btnConflicts').addEventListener('click', function(){ drawerMode = 'conflicts'; renderConflictsDrawer(); openDrawer(); });
-  $('q').addEventListener('input', applySearch);
-
-  /* editor wiring */
-  $('edCat').addEventListener('change', syncNewCat);
-  $('edAllday').addEventListener('change', function(){ syncAllday(); checkEditorConflict(); });
-  ['edDay','edStart','edEnd','edWeeks'].forEach(function(id){
-    $(id).addEventListener('change', checkEditorConflict);
-  });
-  $('edSwatches').addEventListener('click', function(e){
-    const b = e.target.closest('[data-hue]');
-    if (!b) return;
-    editHue = +b.dataset.hue;
-    renderSwatches();
-  });
-  $('editorForm').addEventListener('submit', submitEditor);
-  $('edCancel').addEventListener('click', closeEditor);
-  $('edDelete').addEventListener('click', function(){
-    if (!editingId) return;
-    const id = editingId;
-    closeEditor();
-    deleteEvent(id);
-  });
-
-  /* settings wiring */
-  $('setCancel').addEventListener('click', function(){ $('settings').hidden = true; });
-  $('setSave').addEventListener('click', saveSettings);
-  $('btnReset').addEventListener('click', function(){
-    const btn = $('btnReset');
-    if (btn.dataset.armed === '1'){ resetAll(); btn.dataset.armed = ''; return; }
-    btn.dataset.armed = '1';
-    btn.textContent = 'Bấm lần nữa để xóa hết';
-    setTimeout(function(){ btn.dataset.armed = ''; btn.textContent = 'Làm trống lịch'; }, 4000);
-  });
-
-  let resizeTimer = null;
-  window.addEventListener('resize', function(){
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function(){ render(); }, 150);
-  });
-
+    const ws=weekMonday(),list=eventsInWeek(ws).sort((a,b)=>a.day-b.day||toMin(a.start)-toMin(b.start));let out='LỊCH TUẦN '+isoWeek(ws)+' ('+dm(ws)+' – '+dm(addDays(ws,6))+')\n'+state.appTitle+'\n';if(!list.length)out+='\n(Tuần trống)\n';let cur=-1;list.forEach(e=>{if(e.day!==cur){cur=e.day;out+='\n'+DAYS[e.day]+', '+dm(addDays(ws,e.day))+'\n';}out+='  '+(e.start+'–'+e.end)+'  '+e.title+' · '+cat(e.catId).name+(e.place?' · '+e.place:'')+'\n';});copyText(out);}
+  let tt=null;function toast(m,l,a){const el=$('toast');el.innerHTML='<span>'+esc(m)+'</span>';if(l){const b=document.createElement('button');b.textContent=l;b.onclick=()=>{el.classList.remove('on');a();};el.appendChild(b);}el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),l?6000:2600);}
+  let drag=null,supp=false;const board=$('board');
+  board.addEventListener('pointerdown',e=>{const ev=e.target.closest('.ev');if(!ev)return;drag={id:ev.dataset.id,x:e.clientX,y:e.clientY,moved:false};});
+  window.addEventListener('pointermove',e=>{if(!drag)return;if(!drag.moved){if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)<7)return;drag.moved=true;drag.el=document.querySelector('.ev[data-id="'+drag.id+'"]');drag.el.classList.add('dragging');drag.el.style.pointerEvents='none';document.body.classList.add('grabbing');}const under=document.elementFromPoint(e.clientX,e.clientY);const body=under&&under.closest?under.closest('.dbody'):null;document.querySelectorAll('.dbody.drag-over').forEach(x=>x.classList.remove('drag-over'));if(!body)return;body.classList.add('drag-over');drag.targetDay=+body.closest('.daycol').dataset.day;const rect=body.getBoundingClientRect();let m=gridStart()+((e.clientY-rect.top)/2*SLOT);m=Math.round(m/SLOT)*SLOT;drag.targetStart=Math.max(gridStart(),Math.min(gridEnd()-SLOT,m));});
+  window.addEventListener('pointerup',()=>{if(!drag)return;const d=drag;drag=null;document.body.classList.remove('grabbing');document.querySelectorAll('.dbody.drag-over').forEach(x=>x.classList.remove('drag-over'));if(d.el){d.el.classList.remove('dragging');d.el.style.pointerEvents='';}if(!d.moved)return;supp=true;setTimeout(()=>supp=false,90);if(d.targetDay!=null&&d.targetStart!=null){const ev=state.events.find(x=>x.id===d.id);if(ev){const r=range(ev),dur=r.b-r.a;ev.day=d.targetDay;ev.start=hhmm(d.targetStart);ev.end=hhmm(Math.min(d.targetStart+dur,1440));save();render();toast('Đã dời '+DAYNAMES[ev.day]+' '+ev.start);}}});board.addEventListener('click',e=>{if(supp)return;if(!e.target.closest)return;const ev=e.target.closest('.ev');if(ev){openEvent(ev.dataset.id);return;}const body=e.target.closest('.dbody');if(body){const day=+body.closest('.daycol').dataset.day;const rect=body.getBoundingClientRect();let m=gridStart()+((e.clientY-rect.top)/2*SLOT);m=Math.floor(m/SLOT)*SLOT;m=Math.max(gridStart(),Math.min(gridEnd()-60,m));openEditor({day,start:hhmm(m)});}});
+  board.addEventListener('dblclick',e=>{const ev=e.target.closest('.ev');if(ev)openEditor({id:ev.dataset.id});});
+  $('dwBody').addEventListener('click',e=>{const ag=e.target.closest('[data-agenda]');if(ag){openEvent(ag.dataset.agenda);return;}const act=e.target.closest('[data-act]');if(!act||!selectedId)return;const ev=state.events.find(x=>x.id===selectedId);if(!ev)return;const a=act.dataset.act;if(a==='edit'){closeDrawer();openEditor({id:selectedId});}else if(a==='delete')deleteEvent(selectedId);else if(a==='next'){state.events.push(Object.assign({},ev,{id:uid('ev'),weekStart:ymd(addDays(parseYMD(ev.weekStart),7)),weeks:1}));save();render();toast('Đã thêm sang tuần sau');}});
+  $('dwClose').onclick=closeDrawer;$('scrim').onclick=closeDrawer;
+  document.querySelectorAll('.seg button').forEach(btn=>btn.onclick=function(){state.view=this.dataset.view;save();render();});
+  $('dayPick').onclick=e=>{const b=e.target.closest('[data-day]');if(b){state.dayIndex=+b.dataset.day;save();render();}};
+  $('prevWk').onclick=()=>{state.weekStart=ymd(addDays(weekMonday(),-7));save();render();};
+  $('nextWk').onclick=()=>{state.weekStart=ymd(addDays(weekMonday(),7));save();render();};
+  $('btnToday').onclick=()=>{const now=new Date();state.weekStart=ymd(mondayOf(now));state.dayIndex=(now.getDay()+6)%7;save();render();};
+  $('btnAdd').onclick=()=>openEditor({});$('btnSettings').onclick=openSettings;$('btnAgenda').onclick=()=>{renderAgendaDrawer();openDrawer();};$('btnConflicts').onclick=()=>{renderConflictsDrawer();openDrawer();};$('q').oninput=applySearch;
+  $('edCat').onchange=function(){
+    const row=$('newCatRow');
+    if(this.value==='__new'){if(!row)insertNewCat();else row.hidden=false;}
+    else if(row)row.hidden=true;
+  };
+  function insertNewCat(){const row=document.createElement('div');row.id='newCatRow';row.style.cssText='display:flex;flex-direction:column;gap:10px';row.innerHTML='<label class="field"><span>Tên loại mới</span><input id="edNewCat" maxlength="30" placeholder="VD: Sức khỏe, Việc nhà" autocomplete="off"></label><label class="field"><span>Màu</span><div class="swatches" id="edSwatches"></div></label>';$('editorForm').insertBefore(row,$('edHint'));renderSwatches();}
+  $('edSwatches').onclick=e=>{const b=e.target.closest('[data-hue]');if(b){editHue=+b.dataset.hue;renderSwatches();}};
+  $('editorForm').onsubmit=submitEditor;$('edCancel').onclick=closeEditor;$('edDelete').onclick=function(){if(!editingId)return;const id=editingId;closeEditor();deleteEvent(id);};
+  $('setCancel').onclick=()=>{$('settings').hidden=true;};$('setSave').onclick=saveSettings;$('btnReset').onclick=function(){const btn=this;if(btn.dataset.armed==='1'){resetAll();btn.dataset.armed='';return;}btn.dataset.armed='1';btn.textContent='Bấm lần nữa để xóa hết';setTimeout(()=>{btn.dataset.armed='';btn.textContent='Xóa toàn bộ dữ liệu';},4000);};
+  let rt=null;window.onresize=()=>{clearTimeout(rt);rt=setTimeout(render,150);};
+  document.onkeydown=e=>{if(e.key==='Escape'){if(!$('editor').hidden){closeEditor();return;}if(!$('settings').hidden){$('settings').hidden=true;return;}closeDrawer();}};
   render();
 })();
 </script>
